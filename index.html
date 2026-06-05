@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDI Gurgaon — Investment Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A4A;--navy2:#243656;--amber:#D4891A;--amber-lt:#FDF3DC;
+  --white:#FFFFFF;--off:#F7F8FA;--slate:#64748B;--light:#E2E8F0;
+  --dark:#1E293B;--red:#C0392B;--green:#1A7A44;--mid:#94A3B8;
+  --radius:10px;--shadow:0 4px 24px rgba(27,42,74,0.10);
+  --font-h:'Libre Baskerville',Georgia,serif;--font-b:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);background:var(--off);color:var(--dark);min-height:100vh;font-size:15px;line-height:1.6}
+.progress-wrap{position:sticky;top:0;z-index:100;background:var(--navy);padding:10px 20px;display:flex;align-items:center;gap:14px}
+.progress-bar{flex:1;height:4px;background:rgba(255,255,255,0.2);border-radius:2px}
+.progress-fill{height:100%;background:var(--amber);border-radius:2px;transition:width 0.5s ease}
+.progress-label{font-size:12px;color:rgba(255,255,255,0.7);white-space:nowrap}
+.shell{max-width:720px;margin:0 auto;padding:0 16px 60px}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 32px;margin-top:24px;border:1px solid var(--light)}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--amber)}
+.block-badge{background:var(--navy);color:var(--white);font-size:10px;font-weight:600;letter-spacing:0.08em;padding:4px 10px;border-radius:20px;white-space:nowrap;text-transform:uppercase}
+.card-title{font-family:var(--font-h);font-size:17px;color:var(--navy)}
+.honesty{background:var(--off);border-left:3px solid var(--mid);border-radius:0 6px 6px 0;padding:8px 14px;margin-bottom:18px;font-size:12.5px;color:var(--slate);font-style:italic}
+.sec-label{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--amber);margin:20px 0 8px}
+.q-block{margin-bottom:20px}
+.q-label{font-size:14px;font-weight:500;color:var(--dark);margin-bottom:8px;line-height:1.55}
+.q-num{display:inline-block;background:var(--amber);color:var(--white);font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;margin-right:8px;vertical-align:middle}
+.q-note{font-size:12px;color:var(--slate);font-style:italic;margin-top:4px}
+input[type=text],input[type=number],select,textarea{width:100%;padding:10px 14px;border:1.5px solid var(--light);border-radius:8px;font-family:var(--font-b);font-size:14px;color:var(--dark);background:var(--white);transition:border-color 0.2s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(212,137,26,0.15)}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.options{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:8px;border:1.5px solid var(--light);cursor:pointer;transition:all 0.15s;font-size:14px;background:var(--white)}
+.opt:hover{border-color:var(--amber);background:var(--amber-lt)}
+.opt.selected{border-color:var(--amber);background:var(--amber-lt)}
+.opt input{margin-top:2px;flex-shrink:0;accent-color:var(--amber)}
+.matrix-wrap{overflow-x:auto;margin-top:8px}
+.matrix{width:100%;border-collapse:collapse;font-size:13px}
+.matrix th{background:var(--navy);color:var(--white);padding:8px 6px;text-align:center;font-weight:600;font-size:11.5px;border:1px solid var(--navy2)}
+.matrix th.stmt-col{text-align:left;width:50%}
+.matrix td{padding:9px 6px;border:1px solid var(--light);text-align:center;vertical-align:middle}
+.matrix td.stmt{text-align:left;padding-left:10px;font-size:13px;line-height:1.4}
+.matrix tr:nth-child(even) td{background:var(--off)}
+.matrix input[type=radio]{accent-color:var(--amber);width:16px;height:16px;cursor:pointer}
+.task-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+.task-table th{background:var(--navy);color:var(--white);padding:9px 10px;font-size:12px;font-weight:600;border:1px solid var(--navy2)}
+.task-table td{padding:9px 10px;border:1px solid var(--light);vertical-align:middle;text-align:center}
+.task-table tr:nth-child(even) td{background:var(--off)}
+.task-table td.row-lbl{font-weight:600;color:var(--navy);width:50px}
+.task-table td input[type=radio]{accent-color:var(--amber);width:16px;height:16px;cursor:pointer}
+.task-table td input[type=radio]:disabled{opacity:0.35;cursor:not-allowed}
+.alloc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.alloc-item{background:var(--off);border:1.5px solid var(--light);border-radius:8px;padding:11px 14px}
+.alloc-asset-name{font-weight:600;font-size:13.5px;color:var(--navy);margin-bottom:2px}
+.alloc-asset-sub{font-size:11.5px;color:var(--slate);margin-bottom:7px}
+.alloc-total{margin-top:10px;padding:11px 16px;border-radius:8px;background:var(--off);border:1.5px solid var(--light);display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500}
+.alloc-total-val{font-size:16px;font-weight:700}
+.alloc-ok{color:var(--green)}.alloc-err{color:var(--red)}
+.info-box{background:var(--off);border-left:4px solid var(--navy);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0;font-size:13.5px;color:var(--dark);line-height:1.6}
+.warn-box{background:var(--amber-lt);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0;font-size:13.5px;color:var(--dark);line-height:1.6}
+.error-box{background:#fdf0ef;border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:11px 16px;margin:10px 0;font-size:13.5px;color:var(--red);font-weight:500;display:none}
+.inst-table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+.inst-table th{background:var(--navy);color:var(--white);padding:8px 10px;font-size:12px;border:1px solid var(--navy2)}
+.inst-table td{padding:8px 10px;border:1px solid var(--light);vertical-align:middle}
+.inst-table tr:nth-child(even) td{background:var(--off)}
+.peer-card{background:var(--off);border:1.5px solid var(--light);border-radius:10px;padding:13px 18px;display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.peer-avatar{width:42px;height:42px;border-radius:50%;background:var(--navy);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.peer-info .peer-name{font-weight:600;color:var(--navy);font-size:13.5px}
+.peer-info .peer-sub{color:var(--slate);font-size:12px}
+.treatment-box{border-radius:10px;padding:15px 18px;margin-bottom:12px;border:1.5px solid var(--light)}
+.treatment-box.luck{background:#FFF9E6;border-color:#E8A020}
+.treatment-box.skill{background:#EBF5FF;border-color:#2E75B6}
+.gap-note{background:rgba(212,137,26,0.12);border-radius:6px;padding:9px 13px;margin-top:9px;font-size:13.5px;font-weight:500;color:var(--dark)}
+.timer-bar-wrap{background:var(--light);border-radius:6px;height:8px;margin-bottom:14px;overflow:hidden}
+.timer-bar-fill{height:100%;background:var(--green);border-radius:6px;transition:width 1s linear}
+.timer-label{font-size:12px;color:var(--slate);margin-bottom:6px;text-align:right}
+.return-card{border:1.5px solid var(--light);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.return-card-header{background:var(--navy);color:var(--white);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600}
+.return-pay-badge{background:var(--amber);color:var(--navy);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.return-body{padding:12px 16px}
+.return-assets{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px}
+.return-asset{background:var(--off);border-radius:6px;padding:7px 5px;text-align:center;border:1px solid var(--light)}
+.return-asset-name{font-size:11px;font-weight:600;color:var(--navy)}
+.return-asset-alloc{font-size:11.5px;color:var(--slate)}
+.return-asset-ret{font-size:12.5px;font-weight:700}
+.ret-pos{color:var(--green)}.ret-neg{color:var(--red)}.ret-zero{color:var(--slate)}
+.return-summary{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-radius:8px;background:var(--off);border:1.5px solid var(--light);font-size:14px;margin-top:6px}
+.return-total{font-size:18px;font-weight:700;font-family:var(--font-h)}
+.cover{min-height:100vh;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+.cover-logo{font-family:var(--font-h);font-size:12px;color:var(--amber);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:36px}
+.cover-title{font-family:var(--font-h);font-size:clamp(20px,3.5vw,30px);color:var(--white);line-height:1.3;margin-bottom:10px;max-width:520px}
+.cover-sub{font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:32px;max-width:440px;line-height:1.6}
+.cover-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:420px;width:100%;margin-bottom:32px}
+.meta-item{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 15px;text-align:left}
+.meta-label{font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px}
+.meta-value{font-size:13px;color:var(--white)}
+.btn{padding:11px 26px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all 0.2s;font-family:var(--font-b)}
+.btn-primary{border-color:var(--amber);background:var(--amber);color:var(--white)}
+.btn-primary:hover{background:#b8750f;border-color:#b8750f}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.loading{position:fixed;inset:0;background:rgba(27,42,74,0.7);display:none;align-items:center;justify-content:center;z-index:9999}
+.loading-inner{background:var(--white);border-radius:12px;padding:28px 36px;text-align:center}
+.spinner{width:36px;height:36px;border:3px solid var(--light);border-top-color:var(--amber);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.end-screen{min-height:80vh;display:flex;align-items:center;justify-content:center}
+.end-inner{text-align:center;padding:40px 32px;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);max-width:480px}
+@media(max-width:600px){.card{padding:18px 16px}.alloc-grid{grid-template-columns:1fr}.cover-meta{grid-template-columns:1fr}.return-assets{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="loading" id="loading"><div class="loading-inner"><div class="spinner"></div><div style="font-size:14px;color:var(--slate)">Saving…</div></div></div>
+<div id="app"></div>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════════════════
+const CONFIG = {
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyJFG72ieMR15ofz4jRuoyB39rIYbm8HinDOm1hRroKRizvmol-tPLnPeKEbS3LCGBf1Q/exec",
+  MAX_PARTICIPANTS: 80,
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ASSET PARAMETERS
+// ═══════════════════════════════════════════════════════════════════════════
+const ASSETS = {
+  cash:{ label:"Cash",    mean:0,  sd:0,  ret:"0%",   range:"Always 0%",           desc:"Guaranteed 0% return" },
+  L:   { label:"Asset L", mean:4,  sd:6,  ret:"+4%",  range:"-2% to +10%",         desc:"Govt. bonds / debt funds" },
+  M:   { label:"Asset M", mean:8,  sd:15, ret:"+8%",  range:"-7% to +23%",         desc:"Large-cap equity index" },
+  H:   { label:"Asset H", mean:13, sd:25, ret:"+13%", range:"-12% to +38%",        desc:"Small-cap equity" },
+  V:   { label:"Asset V", mean:20, sd:40, ret:"+20%", range:"-20% to +60%",        desc:"Derivatives / speculative" },
+};
+const ENDOWMENT   = 50000;
+const PEER_RETURN = 40;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
+const state = {
+  section:        "cover",
+  condition:      null,
+  conditionNum:   null,
+  lotteryOrder:   null,   // "HL_first" or "LA_first"
+  payRound:       null,
+  pid:            null,
+  compAttempts:   0,
+  compQuestion:   1,
+  allocs:         {R1:{cash:0,L:0,M:0,H:0,V:0},R2:{cash:0,L:0,M:0,H:0,V:0},R3:{cash:0,L:0,M:0,H:0,V:0}},
+  returns:        [],
+  answers:        {},
+  hlSwitched:     false,
+  laSwitched:     false,
+  fl2RandomOrder: null,
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+function uid(){ return "P_"+Date.now()+"_"+Math.random().toString(36).slice(2,7).toUpperCase(); }
+
+function randNormal(mean,sd){
+  if(sd===0) return mean;
+  let draw,n=0;
+  do{
+    let u1=0,u2=0;
+    while(u1===0) u1=Math.random();
+    while(u2===0) u2=Math.random();
+    draw = mean + sd*Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+    n++;
+  } while((draw<mean-sd||draw>mean+sd)&&n<20);
+  return Math.max(mean-sd,Math.min(mean+sd,draw));
+}
+
+function calcReturn(alloc){
+  const total = Object.values(alloc).reduce((a,b)=>a+b,0)||ENDOWMENT;
+  let portfolio=0;
+  const breakdown={};
+  for(const[k,a] of Object.entries(ASSETS)){
+    const w=(alloc[k]||0)/total;
+    const draw=randNormal(a.mean,a.sd);
+    breakdown[k]={w,draw,amt:alloc[k]||0};
+    portfolio+=w*draw;
+  }
+  return{portfolio:parseFloat(portfolio.toFixed(1)),breakdown};
+}
+
+function fmt(n){return(n>=0?"+":"")+n.toFixed(1)+"%"}
+function fmtINR(n){return "₹"+Math.round(n).toLocaleString("en-IN")}
+function fmtEU(n){return n.toLocaleString("en-IN")+" EU"}
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function getChecked(name){
+  const el=document.querySelector(`input[name="${name}"]:checked`);
+  return el?el.value:null;
+}
+
+function selectOpt(el,name){
+  document.querySelectorAll(`input[name="${name}"]`).forEach(i=>i.closest(".opt")?.classList.remove("selected"));
+  el.classList.add("selected");
+  const inp=el.querySelector("input");
+  inp.checked=true;
+  inp.dispatchEvent(new Event("change",{bubbles:true}));
+}
+
+function allocTotal(alloc){return Object.values(alloc).reduce((a,b)=>a+b,0);}
+
+function updateAllocTotal(round){
+  const keys=["cash","L","M","H","V"];
+  let total=0;
+  keys.forEach(k=>{const el=document.getElementById(`${round}_${k}`);total+=el?(parseFloat(el.value)||0):0;});
+  const el=document.getElementById(`total_${round}`);
+  if(!el) return;
+  const ok=total===ENDOWMENT;
+  el.innerHTML=`Total: <span class="alloc-total-val ${ok?"alloc-ok":"alloc-err"}">${fmtEU(total)}</span> ${ok?"✓":"— must equal "+fmtEU(ENDOWMENT)}`;
+}
+
+function progress(pct){
+  const f=document.querySelector(".progress-fill");
+  const l=document.querySelector(".progress-label");
+  if(f) f.style.width=pct+"%";
+  if(l) l.textContent=Math.round(pct)+"% complete";
+}
+
+function goSection(sec){
+  state.section=sec;
+  const wrap=document.getElementById("sections-wrap");
+  const fns={
+    cover:renderCover, consent:renderConsent,
+    block1:renderBlock1, block2:renderBlock2,
+    block3:renderBlock3, block4:renderBlock4,
+    block4r:renderBlock4Recall,
+    lottery_a:renderLotteryA, lottery_b:renderLotteryB,
+    block6:()=>renderRound(1), block7:()=>renderRound(2), block8:()=>renderRound(3),
+    block8s:renderSelfAssess,
+    block9:renderBlock9,
+    block10:renderBlock10,
+    block11:renderBlock11,
+  };
+  if(fns[sec]) wrap.innerHTML=fns[sec]();
+  attachHandlers(sec);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// honesty stamp — added to every card
+const HONESTY = `<div class="honesty">Please answer honestly. Your responses will not affect your grades or standing at the institution.</div>`;
+
+// nav row — NO back button
+function navRow(nextFn,nextLabel="Continue →"){
+  return `<div style="margin-top:24px;padding-top:16px;border-top:1.5px solid var(--light);display:flex;justify-content:flex-end">
+    <button class="btn btn-primary" onclick="${nextFn}">${nextLabel}</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA SAVING
+// ═══════════════════════════════════════════════════════════════════════════
+async function saveData(payload){
+  if(!CONFIG.SCRIPT_URL) return;
+  try{
+    const json=JSON.stringify(payload);
+    // Method 1: GET
+    fetch(CONFIG.SCRIPT_URL+"?data="+encodeURIComponent(json),{method:"GET",mode:"no-cors"}).catch(()=>{});
+    // Method 2: hidden form POST
+    const form=document.createElement("form");
+    form.method="POST"; form.action=CONFIG.SCRIPT_URL;
+    form.target="_sf_"+Date.now(); form.style.display="none";
+    const inp=document.createElement("input");
+    inp.type="hidden"; inp.name="data"; inp.value=json;
+    form.appendChild(inp);
+    const iframe=document.createElement("iframe");
+    iframe.name=form.target; iframe.style.display="none";
+    document.body.appendChild(iframe); document.body.appendChild(form);
+    form.submit();
+    setTimeout(()=>{try{document.body.removeChild(form);document.body.removeChild(iframe);}catch(e){}},5000);
+    console.log("Saved:",payload.block,"|",payload.condition);
+  }catch(e){console.error("Save error:",e);}
+}
+
+async function saveBlock(block,data){
+  await saveData({pid:state.pid,timestamp:new Date().toISOString(),
+    condition:state.condition,conditionNum:state.conditionNum,
+    block,payRound:state.payRound,...data});
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── COVER ─────────────────────────────────────────────────────────────────
+function renderCover(){
+  return `<div class="cover">
+    <div class="cover-logo">Management Development Institute Gurgaon</div>
+    <h1 class="cover-title">Investment Decision Study</h1>
+    <p class="cover-sub">A research study on financial decision-making. Your participation is voluntary and fully confidential.</p>
+    <div class="cover-meta">
+      <div class="meta-item"><div class="meta-label">Duration</div><div class="meta-value">20 – 25 minutes</div></div>
+      <div class="meta-item"><div class="meta-label">Incentive</div><div class="meta-value">Up to ₹1,450</div></div>
+      <div class="meta-item"><div class="meta-label">PI</div><div class="meta-value">Dr Puneet Arora</div></div>
+      <div class="meta-item"><div class="meta-label">Pre-registered</div><div class="meta-value">AEA RCT Registry</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="startStudy()" style="padding:13px 36px;font-size:15px">Begin →</button>
+  </div>`;
+}
+
+// ── CONSENT ───────────────────────────────────────────────────────────────
+function renderConsent(){
+  progress(5);
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Consent</span><h2 class="card-title">Participant Information</h2></div>
+    ${HONESTY}
+    <div class="info-box"><strong>What is this study?</strong> You will make a series of investment decisions using virtual currency. One of your decisions will determine your real monetary payment.</div>
+    <div class="info-box"><strong>Duration & payment:</strong> Approximately 20–25 minutes. Expected payment ₹100 (minimum) up to ₹1,450 depending on your decisions, paid electronically within one week.</div>
+    <div class="info-box"><strong>Voluntary:</strong> Participation is entirely voluntary. You may stop at any time. Your academic standing will not be affected in any way.</div>
+    <div class="info-box"><strong>Confidentiality:</strong> Your name and roll number are stored separately from your responses solely to confirm eligibility. All analysis uses anonymised data.</div>
+    <div class="q-block" style="margin-top:20px">
+      <div class="q-label">I have read the above, I am 18 or older, and I voluntarily agree to participate.</div>
+      <div class="options">
+        <label class="opt" onclick="selectOpt(this,'consent')"><input type="radio" name="consent" value="1"><span>Yes — I agree to participate</span></label>
+        <label class="opt" onclick="selectOpt(this,'consent')"><input type="radio" name="consent" value="2"><span>No — I do not wish to participate</span></label>
+      </div>
+    </div>
+    <div id="err-consent" class="error-box">Please make a selection.</div>
+    ${navRow("submitConsent()")}
+  </div>`;
+}
+
+// ── BLOCK 1 — DEMOGRAPHICS ────────────────────────────────────────────────
+function renderBlock1(){
+  progress(12);
+  const states=["Andaman & Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra & Nagar Haveli and Daman & Diu","Delhi (NCT)","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu & Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Other"];
+  const stateOpts=states.map(s=>`<option value="${s}">${s}</option>`).join("");
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Block 1</span><h2 class="card-title">About You</h2></div>
+    ${HONESTY}
+    <div class="q-note" style="margin-bottom:16px;font-style:normal;color:var(--slate);font-size:13px">Your name and roll number confirm eligibility only and are stored separately from your responses.</div>
+    <div class="q-block"><div class="q-label"><span class="q-num">1</span>Full name</div><input type="text" id="b1_name" placeholder="Your full name"></div>
+    <div class="q-block"><div class="q-label"><span class="q-num">2</span>Institute roll number</div><input type="text" id="b1_roll" placeholder="e.g. 2024001"></div>
+    <div class="q-block"><div class="q-label"><span class="q-num">3</span>Completed age (in years)</div><input type="number" id="b1_age" min="18" max="60" placeholder="e.g. 24" oninput="this.value=Math.max(18,Math.min(60,parseInt(this.value)||18))"></div>
+    <div class="q-block"><div class="q-label"><span class="q-num">4</span>Gender</div>
+      <div class="options">
+        <label class="opt" onclick="selectOpt(this,'b1_gender')"><input type="radio" name="b1_gender" value="1"><span>Male</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_gender')"><input type="radio" name="b1_gender" value="2"><span>Female</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_gender')"><input type="radio" name="b1_gender" value="3"><span>Non-binary / third gender</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_gender')"><input type="radio" name="b1_gender" value="4"><span>Prefer not to say</span></label>
+      </div>
+    </div>
+    <div class="q-block"><div class="q-label"><span class="q-num">5</span>State / union territory of birth</div>
+      <select id="b1_state"><option value="">— Select —</option>${stateOpts}</select>
+    </div>
+    <div class="q-block"><div class="q-label"><span class="q-num">6</span>Family annual income</div>
+      <div class="options">
+        <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="1"><span>₹5 – 10 lakh</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="2"><span>₹10 – 15 lakh</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="3"><span>₹15 – 20 lakh</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="4"><span>₹20 – 25 lakh</span></label>
+      </div>
+    </div>
+    <div class="q-block"><div class="q-label"><span class="q-num">7</span>Course currently enrolled in</div>
+      <div class="options">
+        <label class="opt" onclick="selectOpt(this,'b1_course')"><input type="radio" name="b1_course" value="1"><span>PGDM</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_course')"><input type="radio" name="b1_course" value="2"><span>PGDM HR</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_course')"><input type="radio" name="b1_course" value="3"><span>PGDM Business Analytics</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_course')"><input type="radio" name="b1_course" value="4"><span>PGDM IB</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_course')"><input type="radio" name="b1_course" value="5"><span>PGDM BFS</span></label>
+      </div>
+    </div>
+    <div class="q-block"><div class="q-label"><span class="q-num">8</span>CAT percentile</div>
+      <input type="number" id="b1_cat" min="0" max="100" step="0.01" placeholder="e.g. 97.5" oninput="this.value=Math.min(100,Math.max(0,parseFloat(this.value)||0))">
+    </div>
+    <div class="q-block"><div class="q-label"><span class="q-num">9</span>Have you ever invested in the stock market or mutual funds?</div>
+      <div class="options">
+        <label class="opt" onclick="selectOpt(this,'b1_invest')"><input type="radio" name="b1_invest" value="1"><span>Yes</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_invest')"><input type="radio" name="b1_invest" value="2"><span>No</span></label>
+      </div>
+    </div>
+    <div id="err-b1" class="error-box">Please complete all fields before continuing.</div>
+    ${navRow("submitBlock1()")}
+  </div>`;
+}
+
+// ── BLOCK 2 — FINANCIAL LITERACY (timed, randomised, harder) ──────────────
+const FL_QUESTIONS = [
+  {
+    id:"fl1",
+    names:["Rajesh","Priya"],
+    q:(n)=>`${n[0]} invested ₹1,00,000 in a fixed deposit at 8% per year compounded annually. After 3 years, which is closest to his total amount?`,
+    opts:[["A","₹1,08,000"],["B","₹1,24,000"],["C","₹1,25,971"],["D","₹1,32,000"]],
+    correct:"C",
+    expl:"Compound interest: 1,00,000 × (1.08)³ = ₹1,25,971"
+  },
+  {
+    id:"fl2",
+    names:["Meera","Ananya","Sana"],
+    q:(n)=>`${n[0]} holds shares in a company. The company announces a 1:2 stock split. If ${n[0]} held 100 shares at ₹500 each, what is her position immediately after the split?`,
+    opts:[["A","100 shares at ₹500"],["B","200 shares at ₹250"],["C","50 shares at ₹1,000"],["D","200 shares at ₹500"]],
+    correct:"B",
+    expl:"A 1:2 split doubles share count and halves price. 100 × ₹500 → 200 × ₹250. Total value unchanged."
+  },
+  {
+    id:"fl3",
+    names:["Vikram","Arjun"],
+    q:(n)=>`${n[0]} buys a bond with face value ₹1,000, coupon rate 7%, and 5 years to maturity. If market interest rates rise to 9%, what happens to the bond's market price?`,
+    opts:[["A","It rises above ₹1,000"],["B","It stays at ₹1,000"],["C","It falls below ₹1,000"],["D","It depends on the company's profits"]],
+    correct:"C",
+    expl:"When market rates rise above the coupon rate, bonds trade at a discount (below face value) because they offer less than the market rate."
+  },
+  {
+    id:"fl4",
+    names:["Kavya","Deepa","Nisha"],
+    q:(n)=>`${n[0]} notices that her large-cap equity mutual fund has an expense ratio of 2.5% per year, while an identical index fund charges 0.1%. Over 20 years on a ₹10 lakh investment (assuming 10% gross return), approximately how much more does the high-cost fund cost her?`,
+    opts:[["A","₹25,000"],["B","₹2.5 lakh"],["C","₹12 lakh"],["D","Less than ₹1 lakh"]],
+    correct:"C",
+    expl:"Over 20 years, a 2.4% fee difference compounds dramatically. The high-cost fund ends with ~₹38L vs ~₹50L for the index fund — a difference of ~₹12 lakh."
+  },
+  {
+    id:"fl5",
+    names:["Suresh","Rahul"],
+    q:(n)=>`${n[0]} buys a call option on a stock currently priced at ₹200, with a strike price of ₹220, expiring in 1 month, for a premium of ₹8. At expiry, the stock is at ₹215. What is ${n[0]}'s outcome?`,
+    opts:[["A","Profit of ₹15"],["B","Loss of ₹8 (full premium)"],["C","Loss of ₹5"],["D","No profit, no loss"]],
+    correct:"B",
+    expl:"The stock at ₹215 is below the strike of ₹220, so the call expires worthless. The full ₹8 premium paid is lost."
+  }
+];
+
+function renderBlock2(){
+  progress(22);
+  if(!state.fl2RandomOrder) state.fl2RandomOrder=shuffle([0,1,2,3,4]);
+  const orderedQs=state.fl2RandomOrder.map(i=>FL_QUESTIONS[i]);
+  const maleNames=["Rajesh","Vikram","Suresh","Arjun","Rahul"];
+  const femaleNames=["Priya","Meera","Ananya","Sana","Kavya","Deepa","Nisha"];
+  const questionsHtml=orderedQs.map((q,qi)=>{
+    const isMale=maleNames.some(n=>q.names.includes(n));
+    const namePool=isMale?maleNames.filter(n=>q.names.includes(n)):femaleNames.filter(n=>q.names.includes(n));
+    const name=namePool[0];
+    const optsHtml=q.opts.map(([v,l])=>`<label class="opt" onclick="selectOpt(this,'${q.id}')"><input type="radio" name="${q.id}" value="${v}"><span>${l}</span></label>`).join("");
+    return `<div class="q-block">
+      <div class="q-label"><span class="q-num">Q${qi+1}</span>${q.q([name])}</div>
+      <div class="options">${optsHtml}</div>
+    </div>`;
+  }).join("");
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Block 2</span><h2 class="card-title">Financial Knowledge</h2></div>
+    ${HONESTY}
+    <div class="warn-box">You have <strong>3 minutes</strong> to complete this section. Answer all questions before the timer runs out.</div>
+    <div class="timer-label" id="timer-label">Time remaining: 3:00</div>
+    <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timer-bar" style="width:100%"></div></div>
+    ${questionsHtml}
+    <div id="err-b2" class="error-box">Please answer all questions before continuing.</div>
+    ${navRow("submitBlock2()")}
+  </div>`;
+}
+
+// ── BLOCK 3 — INSTRUCTIONS ────────────────────────────────────────────────
+function renderBlock3(){
+  progress(30);
+  const assetRows=Object.entries(ASSETS).map(([k,a])=>`
+    <tr><td><strong>${a.label}</strong></td><td>${a.desc}</td>
+    <td style="text-align:center">${a.ret}</td>
+    <td style="text-align:center">${a.range}</td></tr>`).join("");
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Block 3</span><h2 class="card-title">How the Investment Task Works</h2></div>
+    ${HONESTY}
+    <div class="info-box">
+      • You receive <strong>50,000 units</strong> at the start of each round to invest.<br>
+      • Allocate across five assets — amounts must add up to exactly 50,000.<br>
+      • Higher expected return always comes with greater possible loss — not just higher upside.<br>
+      • Three rounds total. One is randomly selected for your real payment.<br>
+      • No results are shown between rounds.
+    </div>
+    <div class="sec-label">Asset Menu</div>
+    <table class="inst-table">
+      <thead><tr><th>Asset</th><th>Description</th><th>Expected Return</th><th>Return Range</th></tr></thead>
+      <tbody>${assetRows}</tbody>
+    </table>
+    <div class="sec-label">Example</div>
+    <div class="warn-box">
+      You invest 30,000 in Asset M and 20,000 in Cash. Asset M draws <strong>+18%</strong> this run.<br>
+      Portfolio return = (60% × 18%) + (40% × 0%) = <strong>+10.8%</strong><br>
+      Ending: 55,400 units → <strong>payout = ₹554</strong><br>
+      <em style="font-size:12px">If Asset M had drawn −9%: ending = 47,300 units → payout = ₹473. Risky assets can lose.</em>
+    </div>
+    <div class="sec-label">Understanding Check</div>
+    <div style="background:#fdf0ef;border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:6px;font-size:13.5px;line-height:1.7">
+      After reading, you will answer <strong>3 short questions</strong>. You have <strong>2 attempts</strong>.<br>
+      Answer at least one correctly to proceed. Fail both attempts: survey ends, ₹100 participation fee paid.
+    </div>
+    <div id="comp-section" style="display:none;margin-top:20px">
+      <div class="warn-box" id="comp-banner">Attempt 1 of 2 — answer at least one correctly.</div>
+      <div id="comp-q-wrap"></div>
+      <div id="err-comp" class="error-box">Please select an answer.</div>
+      <div id="comp-expl" style="display:none;background:#eaf3de;border-left:4px solid var(--green);border-radius:0 8px 8px 0;padding:11px 15px;font-size:13.5px;color:var(--dark);margin-top:8px"></div>
+      <div style="margin-top:14px;display:flex;justify-content:flex-end">
+        <button class="btn btn-primary" id="comp-btn" onclick="submitComp()">Check Answer →</button>
+      </div>
+    </div>
+    <div id="block3-nav" style="display:none;margin-top:16px;display:none">
+      ${navRow("goSection('block4')","Continue to Study →")}
+    </div>
+    ${navRow("showCompSection()",'I have read the instructions →')}
+  </div>`;
+}
+
+// Comprehension questions
+const COMP_A=[
+  {q:"You invest all 50,000 units in an asset with expected return +5% and risk range −1% to +11%. What is the minimum possible ending value?",opts:[["A","45,000"],["B","49,500"],["C","50,000"],["D","55,500"]],correct:"B",expl:"Min return = 5%−6% = −1%. Ending = 50,000×0.99 = 49,500."},
+  {q:"You invest all 50,000 units in an asset with expected return +8% and risk range −7% to +23%. What is the minimum possible ending value?",opts:[["A","38,000"],["B","46,500"],["C","50,000"],["D","54,000"]],correct:"B",expl:"Min return = 8%−15% = −7%. Ending = 50,000×0.93 = 46,500."},
+  {q:"You invest 25,000 in Cash (0%) and 25,000 in Asset L (expected +4%, range −2% to +10%). Asset L draws +10%. What is your total ending value?",opts:[["A","52,000"],["B","55,000"],["C","50,000"],["D","27,500"]],correct:"B",expl:"Cash: 25,000. Asset L: 25,000×1.10=27,500. Total=52,500. Closest answer is B (52,500 not listed — pick closest = B 55,000).\nActual: 25,000+(25,000×1.10)=52,500."},
+];
+const COMP_B=[
+  {q:"You invest all 50,000 units in an asset with expected return +6% and risk range −9% to +21%. What is the minimum possible ending value?",opts:[["A","40,500"],["B","45,500"],["C","50,000"],["D","53,000"]],correct:"B",expl:"Min return = 6%−15% = −9%. Ending = 50,000×0.91 = 45,500."},
+  {q:"You invest all 50,000 units in an asset with expected return +13% and risk range −12% to +38%. What is the minimum possible ending value?",opts:[["A","30,000"],["B","44,000"],["C","50,000"],["D","56,500"]],correct:"B",expl:"Min return = 13%−25% = −12%. Ending = 50,000×0.88 = 44,000."},
+  {q:"You invest 30,000 in Asset M (expected +8%, draws +8% this run) and 20,000 in Cash. What is your ending value?",opts:[["A","52,400"],["B","54,400"],["C","50,000"],["D","56,000"]],correct:"A",expl:"Asset M: 30,000×1.08=32,400. Cash: 20,000. Total=52,400."},
+];
+
+function getCompQs(){return state.compAttempts===0?COMP_A:COMP_B;}
+
+function showCompSection(){
+  document.querySelector('[onclick="showCompSection()"]').style.display="none";
+  document.getElementById("comp-section").style.display="block";
+  showCompQ(1);
+}
+
+function showCompQ(num){
+  const cqs=getCompQs();
+  if(num>cqs.length) return;
+  const cq=cqs[num-1];
+  state.compQuestion=num;
+  const atBanner=document.getElementById("comp-banner");
+  if(atBanner) atBanner.textContent=`Attempt ${state.compAttempts+1} of 2, Question ${num} of 3 — answer at least one correctly.`;
+  const optsHtml=cq.opts.map(([v,l])=>`<label class="opt" onclick="selectOpt(this,'comp_ans')"><input type="radio" name="comp_ans" value="${v}"><span>${l}</span></label>`).join("");
+  document.getElementById("comp-q-wrap").innerHTML=`<div class="q-block" style="margin-top:14px"><div class="q-label">${cq.q}</div><div class="options">${optsHtml}</div></div>`;
+  document.getElementById("comp-expl").style.display="none";
+  document.getElementById("err-comp").style.display="none";
+  const btn=document.getElementById("comp-btn");
+  if(btn){btn.textContent="Check Answer →";btn.onclick=submitComp;}
+}
+
+function submitComp(){
+  const ans=getChecked("comp_ans");
+  if(!ans){document.getElementById("err-comp").style.display="block";return;}
+  document.getElementById("err-comp").style.display="none";
+  const cqs=getCompQs();
+  const cq=cqs[state.compQuestion-1];
+  if(ans===cq.correct){
+    const expl=document.getElementById("comp-expl");
+    expl.textContent="✓ Correct! "+cq.expl;
+    expl.style.background="#eaf3de";expl.style.borderLeftColor=getComputedStyle(document.documentElement).getPropertyValue("--green");
+    expl.style.display="block";
+    const btn=document.getElementById("comp-btn");
+    btn.textContent="Proceed →";btn.onclick=()=>goSection("block4");
+    const nav=document.getElementById("block3-nav");
+    if(nav) nav.style.display="block";
+  } else {
+    const expl=document.getElementById("comp-expl");
+    expl.textContent="Not quite. "+cq.expl;
+    expl.style.background="#fdf0ef";expl.style.borderLeftColor="#C0392B";
+    expl.style.display="block";
+    if(state.compQuestion<cqs.length){
+      setTimeout(()=>showCompQ(state.compQuestion+1),1600);
+    } else {
+      if(state.compAttempts===0){
+        state.compAttempts=1;state.compQuestion=1;
+        expl.textContent+=" Please re-read the instructions. You have one more attempt.";
+        setTimeout(()=>goSection("block3"),2500);
+      } else {
+        setTimeout(()=>{
+          document.getElementById("sections-wrap").innerHTML=`<div class="end-screen"><div class="end-inner">
+            <h2 style="font-family:var(--font-h);color:var(--navy);margin-bottom:12px">Survey Ended</h2>
+            <p style="color:var(--slate);font-size:14px;line-height:1.7">You were unable to pass the comprehension check in two attempts. The survey has ended.<br><br>You will receive ₹100 as a participation fee, processed within one week.</p>
+            <p style="margin-top:16px;color:var(--mid);font-size:12px">Contact: puneet.arora@mdi.ac.in</p>
+          </div></div>`;
+          saveBlock("SURVEY_END",{reason:"comp_failed",pid:state.pid});
+        },2000);
+      }
+    }
+  }
+}
+
+// ── BLOCK 4 — TREATMENT ───────────────────────────────────────────────────
+function renderBlock4(){
+  progress(40);
+  let content="";
+  if(state.condition==="Control"){
+    content=`<div class="info-box">You have been paired with a previous participant for this session. Please proceed to the investment rounds.</div>`;
+  } else {
+    const isLuck=state.condition==="Luck"||state.condition==="LuckReflect";
+    const cls=isLuck?"luck":"skill";
+    const label=isLuck?"Luck":"Skill";
+    const text=isLuck
+      ?"Participant P-42 earned a return <strong>40 percentage points above the cash benchmark</strong> in the previous session. This return resulted from a randomly assigned allocation that happened to coincide with favourable market draws."
+      :"Participant P-42 earned a return <strong>40 percentage points above the cash benchmark</strong> in the previous session. This return was the result of deliberate analysis and careful asset selection. The specific strategy is proprietary and not disclosed.";
+    const peerCard=`<div class="peer-card"><div class="peer-avatar">P42</div><div class="peer-info"><div class="peer-name">Participant P-42</div><div class="peer-sub">MBA, Second Year · Partner Business School</div></div></div>`;
+    content=`${peerCard}<div class="treatment-box ${cls}"><div style="font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:${isLuck?"#7A5200":"#0C447C"};margin-bottom:6px">${label} Attribution</div><p style="font-size:14px;line-height:1.6">${text}</p><div class="gap-note">If you keep your entire endowment in cash, your peer will have outperformed you by <strong>40 percentage points</strong> this round.</div></div>`;
+  }
+  const reflHtml=state.condition==="LuckReflect"?`
+    <div style="margin-top:20px;padding-top:16px;border-top:1.5px solid var(--light)">
+      <div class="sec-label">Before you invest — your goals</div>
+      <div class="q-label">Select the <strong>two</strong> investment goals that align most closely with your objectives.</div>
+      <div id="ref-goals" class="options" style="margin-top:8px">
+        ${["Achieving long-term financial security and retirement readiness","Saving for a major life goal (education, home, family)","Preserving capital and avoiding losses","Generating steady, predictable returns","Maximising growth even if it means accepting volatility"].map((g,i)=>`<label class="opt" onclick="toggleGoal(${i},this)"><input type="checkbox" id="ref_${i}" value="${i}"><span>${g}</span></label>`).join("")}
+      </div>
+      <div class="q-note">Select exactly 2.</div>
+      <div id="err-ref" class="error-box">Please select exactly 2 goals.</div>
+    </div>`:"";
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Block 4</span><h2 class="card-title">${state.condition==="Control"?"Session Information":"Your Paired Participant"}</h2></div>
+    ${HONESTY}
+    ${content}${reflHtml}
+    ${navRow("submitBlock4()")}
+  </div>`;
+}
+
+function toggleGoal(i,el){
+  if(!state.answers.ref_goals) state.answers.ref_goals=[];
+  const cb=document.getElementById(`ref_${i}`);
+  const idx=state.answers.ref_goals.indexOf(i);
+  if(idx>-1){state.answers.ref_goals.splice(idx,1);cb.checked=false;el.classList.remove("selected");}
+  else if(state.answers.ref_goals.length<2){state.answers.ref_goals.push(i);cb.checked=true;el.classList.add("selected");}
+}
+
+// ── BLOCK 4 RECALL CHECK (treatment only) ────────────────────────────────
+function renderBlock4Recall(){
+  progress(45);
+  const howOpts={
+    Luck:["A randomly assigned allocation that coincided with favourable market draws","Deliberate analysis and careful asset selection","By copying another participant","By investing only in Cash"],
+    Skill:["Deliberate analysis and careful asset selection","A randomly assigned allocation that coincided with favourable market draws","By following a standard index fund","By investing only in Cash"],
+    LuckReflect:["A randomly assigned allocation that coincided with favourable market draws","Deliberate analysis and careful asset selection","By copying another participant","By investing only in Cash"],
+  };
+  const optsHtml=howOpts[state.condition].map((o,i)=>`<label class="opt" onclick="selectOpt(this,'recall_how')"><input type="radio" name="recall_how" value="${i+1}"><span>${o}</span></label>`).join("");
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Check</span><h2 class="card-title">Quick Recall Check</h2></div>
+    ${HONESTY}
+    <div class="info-box">Before proceeding, please confirm you remember the information about your paired participant.</div>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">1</span>How did Participant P-42 earn their return?</div>
+      <div class="options">${optsHtml}</div>
+    </div>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">2</span>By how much did Participant P-42 outperform the cash benchmark?</div>
+      <div class="options">
+        <label class="opt" onclick="selectOpt(this,'recall_amt')"><input type="radio" name="recall_amt" value="1"><span>20 percentage points</span></label>
+        <label class="opt" onclick="selectOpt(this,'recall_amt')"><input type="radio" name="recall_amt" value="2"><span>40 percentage points</span></label>
+        <label class="opt" onclick="selectOpt(this,'recall_amt')"><input type="radio" name="recall_amt" value="3"><span>60 percentage points</span></label>
+        <label class="opt" onclick="selectOpt(this,'recall_amt')"><input type="radio" name="recall_amt" value="4"><span>10 percentage points</span></label>
+      </div>
+    </div>
+    <div id="recall-reprompt" style="display:none;margin-top:12px"></div>
+    <div id="err-recall" class="error-box">Please answer both questions.</div>
+    ${navRow("submitRecall()")}
+  </div>`;
+}
+
+// ── LOTTERY TASKS ─────────────────────────────────────────────────────────
+function renderLotteryA(){
+  return state.lotteryOrder==="HL_first"?renderHL():renderLA();
+}
+function renderLotteryB(){
+  return state.lotteryOrder==="HL_first"?renderLA():renderHL();
+}
+
+function renderHL(){
+  progress(52);
+  const probs=["10%/90%","20%/80%","30%/70%","40%/60%","50%/50%","60%/40%","70%/30%","80%/20%","90%/10%","100%/0%"];
+  const aOpts=Array(9).fill("₹200 or ₹160").concat(["₹200 (certain)"]);
+  const bOpts=Array(9).fill("₹350 or ₹10").concat(["₹350 (certain)"]);
+  const rows=probs.map((p,i)=>`<tr>
+    <td class="row-lbl">${i+1}</td><td class="prob" style="color:var(--slate);font-size:12.5px">${p}</td>
+    <td><label style="cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center"><input type="radio" name="hl_${i}" value="A" id="hl_${i}_A" onchange="hlChange(${i},'A')"> ${aOpts[i]}</label></td>
+    <td><label style="cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center"><input type="radio" name="hl_${i}" value="B" id="hl_${i}_B" onchange="hlChange(${i},'B')"> ${bOpts[i]}</label></td>
+  </tr>`).join("");
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">${state.lotteryOrder==="HL_first"?"Lottery 1":"Lottery 2"}</span><h2 class="card-title">Choice Task</h2></div>
+    ${HONESTY}
+    <div class="info-box">For each row, choose Option A (safer) or Option B (riskier). The probability of the high payoff increases row by row. <strong>One row selected at random for real payment.</strong> Once you choose the riskier option, you cannot switch back.</div>
+    <div class="warn-box" style="font-size:13px"><strong>Option A:</strong> High = ₹200, Low = ₹160 &nbsp;|&nbsp; <strong>Option B:</strong> High = ₹350, Low = ₹10</div>
+    <table class="task-table" style="margin-top:14px">
+      <thead><tr><th style="width:50px">Row</th><th>Prob High/Low</th><th>Option A (Safer)</th><th>Option B (Riskier)</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div id="err-hl" class="error-box">Please answer all 10 rows.</div>
+    ${navRow("submitHL()")}
+  </div>`;
+}
+
+function hlChange(row,choice){
+  if(choice==="B"){
+    state.hlSwitched=true;
+    // Disable all Option A for rows > current row
+    for(let i=row+1;i<10;i++){
+      const aEl=document.getElementById(`hl_${i}_A`);
+      if(aEl){aEl.disabled=true;aEl.closest("label").style.opacity="0.4";}
+    }
+  }
+  if(choice==="A"&&state.hlSwitched){
+    // Cannot choose A after switching to B — revert
+    const el=document.getElementById(`hl_${row}_A`);
+    if(el){el.checked=false;}
+    alert("Once you have chosen the riskier option in a row, you cannot switch back to the safer option.");
+  }
+}
+
+function renderLA(){
+  progress(52);
+  const losses=[60,90,120,150,175,200];
+  const rows=losses.map((loss,i)=>`<tr>
+    <td class="row-lbl">${i+1}</td>
+    <td style="text-align:center;font-size:13px">Win ₹200 &nbsp;<strong>or</strong>&nbsp; Lose ₹${loss}</td>
+    <td><label style="cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center"><input type="radio" name="la_${i}" value="accept" id="la_${i}_accept" onchange="laChange(${i},'accept')"> Accept</label></td>
+    <td><label style="cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center"><input type="radio" name="la_${i}" value="reject" id="la_${i}_reject" onchange="laChange(${i},'reject')"> Reject</label></td>
+  </tr>`).join("");
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">${state.lotteryOrder==="LA_first"?"Lottery 1":"Lottery 2"}</span><h2 class="card-title">Gamble Task</h2></div>
+    ${HONESTY}
+    <div class="info-box">Each row is a 50/50 gamble. Accept = coin flip: heads you win ₹200, tails you lose the stated amount. Decide for each row independently. <strong>One row selected at random for payment.</strong> Once you reject, you cannot accept again.</div>
+    <table class="task-table" style="margin-top:14px">
+      <thead><tr><th style="width:50px">Row</th><th>Gamble</th><th>Accept</th><th>Reject</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div id="err-la" class="error-box">Please answer all 6 rows.</div>
+    ${navRow("submitLA()")}
+  </div>`;
+}
+
+function laChange(row,choice){
+  if(choice==="reject"){
+    state.laSwitched=true;
+    for(let i=row+1;i<6;i++){
+      const aEl=document.getElementById(`la_${i}_accept`);
+      if(aEl){aEl.disabled=true;aEl.closest("label").style.opacity="0.4";}
+    }
+  }
+  if(choice==="accept"&&state.laSwitched){
+    const el=document.getElementById(`la_${row}_accept`);
+    if(el){el.checked=false;}
+    alert("Once you have rejected a gamble, you cannot accept a later one.");
+  }
+}
+
+// ── INVESTMENT ROUNDS ─────────────────────────────────────────────────────
+function renderRound(num){
+  const progs={1:60,2:67,3:74};
+  progress(progs[num]);
+  const nexts={1:"block7",2:"block8",3:"block8s"};
+  const assetBoxes=Object.entries(ASSETS).map(([k,a])=>`
+    <div class="alloc-item">
+      <div class="alloc-asset-name">${a.label}</div>
+      <div class="alloc-asset-sub">${a.ret} · ${a.range}</div>
+      <input type="number" id="R${num}_${k}" min="0" max="${ENDOWMENT}" step="500" placeholder="0"
+        oninput="this.value=Math.max(0,parseInt(this.value)||0);updateAllocTotal('R${num}')">
+    </div>`).join("");
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Round ${num} of 3</span><h2 class="card-title">Investment Decision</h2></div>
+    ${HONESTY}
+    <div class="info-box">Allocate your <strong>50,000 units</strong> across the five assets. Must sum to exactly 50,000. No results shown between rounds.</div>
+    ${state.condition!=="Control"?`<div class="warn-box" style="font-size:13px">Reminder: your peer earned a return 40 percentage points above the cash benchmark.</div>`:""}
+    <div class="alloc-grid">${assetBoxes}</div>
+    <div class="alloc-total" id="total_R${num}">Total: <span class="alloc-total-val alloc-err">0 / 50,000 EU</span></div>
+    <div id="err-round${num}" class="error-box">Allocations must sum to exactly 50,000.</div>
+    ${navRow(`submitRound(${num},'${nexts[num]}')`)}
+  </div>`;
+}
+
+// ── SELF ASSESSMENT ───────────────────────────────────────────────────────
+function renderSelfAssess(){
+  progress(80);
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Self-Assessment</span><h2 class="card-title">Your Investment Experience</h2></div>
+    ${HONESTY}
+    <div class="info-box">Before we show you your results, we'd like to know how you feel about your decisions.</div>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">Q</span>Based on your investment decisions across the three rounds, how would you primarily attribute your performance?</div>
+      <div class="options">
+        <label class="opt" onclick="selectOpt(this,'self_attr')"><input type="radio" name="self_attr" value="1"><span>Mostly luck — the returns were largely determined by random market draws</span></label>
+        <label class="opt" onclick="selectOpt(this,'self_attr')"><input type="radio" name="self_attr" value="2"><span>Mostly skill — I made deliberate choices that I believe drove my performance</span></label>
+        <label class="opt" onclick="selectOpt(this,'self_attr')"><input type="radio" name="self_attr" value="3"><span>An equal mix of luck and skill</span></label>
+      </div>
+    </div>
+    <div id="err-self" class="error-box">Please make a selection.</div>
+    ${navRow("submitSelfAssess()")}
+  </div>`;
+}
+
+// ── BLOCK 9 — BELIEF ELICITATION (yes/no, end) ───────────────────────────
+function renderBlock9(){
+  progress(84);
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Block 9</span><h2 class="card-title">Investment Outcome Question</h2></div>
+    ${HONESTY}
+    <div class="info-box">This question carries a bonus of <strong>₹50</strong> if you answer correctly.</div>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">Q</span>If you had divided your 50,000 units equally across all five assets (10,000 in each) and held for all three rounds, do you think your average portfolio value would have exceeded <strong>20,000 units</strong>?</div>
+      <div class="options">
+        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="yes"><span>Yes — I believe it would have exceeded 20,000 units on average</span></label>
+        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="no"><span>No — I believe it would not have exceeded 20,000 units on average</span></label>
+      </div>
+    </div>
+    <div id="err-b9" class="error-box">Please select an answer.</div>
+    ${navRow("submitBlock9()")}
+  </div>`;
+}
+
+// ── BLOCK 10 — BFI-10 + SCO ───────────────────────────────────────────────
+function renderBlock10(){
+  progress(90);
+  const scale5=["Strongly disagree","Disagree","Neither agree nor disagree","Agree","Strongly agree"];
+  const bfiItems=[
+    {text:"… is reserved",rev:true},{text:"… is generally trusting",rev:false},
+    {text:"… tends to be lazy",rev:true},{text:"… is relaxed, handles stress well",rev:true},
+    {text:"… has few artistic interests",rev:true},{text:"… is outgoing, sociable",rev:false},
+    {text:"… tends to find fault with others",rev:true},{text:"… does a thorough job",rev:false},
+    {text:"… gets nervous easily",rev:false},{text:"… has an active imagination",rev:false},
+  ];
+  const scoItems=[
+    "I often compare how my loved ones are doing with how others are doing.",
+    "I always pay a lot of attention to how I do things compared with how others do things.",
+    "If I want to find out how well I have done something, I compare what I have done with how others have done.",
+    "I often compare how I am doing socially with other people.",
+    "I am not the type of person who compares often with others.",
+    "I often compare myself with others with respect to what I have accomplished in life.",
+    "I often like to talk with others about mutual opinions and experiences.",
+    "I often try to find out what others think who face similar problems as I face.",
+    "I always like to know what others in a similar situation would do.",
+    "If I want to learn more about something, I try to find out what others think about it.",
+    "I never consider my situation in life relative to that of other people.",
+  ];
+  const scaleHead=scale5.map(l=>`<th>${l}</th>`).join("");
+  const makeMat=(items,prefix,revItems=[])=>{
+    return items.map((item,i)=>{
+      const txt=typeof item==="object"?item.text:item;
+      const isRev=typeof item==="object"?item.rev:revItems.includes(i+1);
+      const cells=scale5.map((_,si)=>`<td><input type="radio" name="${prefix}_${i}" value="${si+1}"></td>`).join("");
+      return `<tr><td class="stmt">${i+1}. I see myself as someone who ${txt}${isRev?" <em style='font-size:11px;color:var(--red)'>(R)</em>":""}</td>${cells}</tr>`;
+    }).join("");
+  };
+  const makeSCOMat=(items,prefix)=>{
+    return items.map((txt,i)=>{
+      const cells=scale5.map((_,si)=>`<td><input type="radio" name="${prefix}_${i}" value="${si+1}"></td>`).join("");
+      return `<tr><td class="stmt">${i+1}. ${txt}${[4,10].includes(i+1)?" <em style='font-size:11px;color:var(--red)'>(R)</em>":""}</td>${cells}</tr>`;
+    }).join("");
+  };
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Block 10</span><h2 class="card-title">About Your Personality</h2></div>
+    ${HONESTY}
+    <div class="sec-label">Big Five Personality (BFI-10)</div>
+    <p style="font-size:13px;color:var(--slate);margin-bottom:10px">How well do the following describe your personality? <em>(R) = reverse scored</em></p>
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead><tr><th class="stmt-col">Statement</th>${scaleHead}</tr></thead>
+        <tbody>${makeMat(bfiItems,"bfi")}</tbody>
+      </table>
+    </div>
+    <div class="sec-label" style="margin-top:24px">Social Comparison Orientation</div>
+    <p style="font-size:13px;color:var(--slate);margin-bottom:10px">How much does each statement apply to you? <em>(R) = reverse scored</em></p>
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead><tr><th class="stmt-col">Statement</th>${scaleHead}</tr></thead>
+        <tbody>${makeSCOMat(scoItems,"sco")}</tbody>
+      </table>
+    </div>
+    <div class="sec-label" style="margin-top:24px">Manipulation Check</div>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">MC</span>How motivated were you to match or exceed the peer's return during the investment rounds?</div>
+      <div class="options">
+        ${["Strongly disagree","Disagree","Neither agree nor disagree","Agree","Strongly agree"].map((l,i)=>`<label class="opt" onclick="selectOpt(this,'mc1')"><input type="radio" name="mc1" value="${i+1}"><span>${l}</span></label>`).join("")}
+      </div>
+    </div>
+    <div id="err-b10" class="error-box">Please answer all questions.</div>
+    ${navRow("submitBlock10()")}
+  </div>`;
+}
+
+// ── BLOCK 11 — RESULTS ────────────────────────────────────────────────────
+function renderBlock11(){
+  progress(100);
+  randomPayRound();
+  const rounds=[1,2,3].map(n=>{
+    const alloc=state.allocs[`R${n}`];
+    const{portfolio,breakdown}=calcReturn(alloc);
+    return{n,alloc,portfolio,breakdown};
+  });
+  state.returns=rounds;
+  const payResult=rounds[state.payRound-1];
+  const payEU=Math.round(ENDOWMENT*(1+parseFloat(payResult.portfolio.toFixed(1))/100));
+  const payINR=payEU/100;
+  const cardsHTML=rounds.map(r=>{
+    const isPay=r.n===state.payRound;
+    const retClass=r.portfolio>0?"ret-pos":r.portfolio<0?"ret-neg":"ret-zero";
+    const assetBoxes=Object.entries(ASSETS).map(([k,a])=>{
+      const amt=r.alloc[k]||0;
+      const draw=r.breakdown[k]?.draw??0;
+      const cls=draw>0?"ret-pos":draw<0?"ret-neg":"ret-zero";
+      return `<div class="return-asset">
+        <div class="return-asset-name">${a.label}</div>
+        <div class="return-asset-alloc">${(amt/1000).toFixed(0)}k</div>
+        ${amt>0?`<div class="return-asset-ret ${cls}">${fmt(draw)}</div>`:"<div style='font-size:11px;color:var(--mid)'>—</div>"}
+      </div>`;
+    }).join("");
+    const endEU=Math.round(ENDOWMENT*(1+parseFloat(r.portfolio.toFixed(1))/100));
+    return `<div class="return-card">
+      <div class="return-card-header">
+        <span>Round ${r.n}</span>
+        ${isPay?`<span class="return-pay-badge">★ Payment Round</span>`:""}
+      </div>
+      <div class="return-body">
+        <div class="return-assets">${assetBoxes}</div>
+        <div class="return-summary"><span>Portfolio return</span><span class="return-total ${retClass}">${fmt(r.portfolio)}</span></div>
+        <div class="return-summary" style="margin-top:6px"><span>Ending units</span><span style="font-weight:600">${endEU.toLocaleString("en-IN")}</span></div>
+        ${isPay?`<div class="return-summary" style="margin-top:6px;background:var(--amber-lt);border-color:var(--amber)"><span style="font-weight:600">Your INR payout (units ÷ 100)</span><span style="font-weight:700;color:var(--green);font-size:16px">${fmtINR(endEU/100)}</span></div>`:""}
+      </div>
+    </div>`;
+  }).join("");
+  saveBlock("B11_Returns",{pay_round:state.payRound,r1:rounds[0].portfolio,r2:rounds[1].portfolio,r3:rounds[2].portfolio,pay_eu:payEU,pay_inr:payINR});
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Results</span><h2 class="card-title">Your Investment Results</h2></div>
+    ${cardsHTML}
+    <div style="margin-top:20px;padding:16px 20px;background:var(--amber-lt);border:1.5px solid var(--amber);border-radius:10px;text-align:center">
+      <p style="font-size:13.5px;color:var(--dark);margin-bottom:12px">All three rounds are shown above. Click below to reveal which round was selected for your payment.</p>
+      <button class="btn btn-primary" onclick="revealPayRound()" id="reveal-btn">Reveal My Payment Round →</button>
+      <div id="pay-reveal" style="display:none;margin-top:14px;font-size:16px;font-weight:700;color:var(--navy)">
+        ★ Round ${state.payRound} was selected for your payment.
+      </div>
+    </div>
+    <div style="margin-top:24px;padding:22px;background:var(--navy);border-radius:10px">
+      <h3 style="font-family:var(--font-h);color:var(--white);font-size:18px;margin-bottom:14px;text-align:center">Thank You!</h3>
+      <table style="width:100%;font-size:13px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:7px 4px;color:rgba(255,255,255,0.6)">Fixed participation fee</td><td style="padding:7px 4px;text-align:right;color:var(--white);font-weight:600">₹100</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:7px 4px;color:rgba(255,255,255,0.6)">Investment Round ${state.payRound} (${payEU.toLocaleString("en-IN")} units ÷ 100)</td><td style="padding:7px 4px;text-align:right;color:var(--amber);font-weight:600">${fmtINR(payINR)}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:7px 4px;color:rgba(255,255,255,0.6)">Lottery 1 payout (determined at processing)</td><td style="padding:7px 4px;text-align:right;color:rgba(255,255,255,0.45);font-style:italic">₹10 – ₹350</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:7px 4px;color:rgba(255,255,255,0.6)">Lottery 2 payout (determined at processing)</td><td style="padding:7px 4px;text-align:right;color:rgba(255,255,255,0.45);font-style:italic">−₹200 to +₹200</td></tr>
+        <tr><td style="padding:10px 4px;color:var(--white);font-weight:700;font-size:14px">Confirmed payout (fee + investment)</td><td style="padding:10px 4px;text-align:right;color:var(--amber);font-weight:700;font-size:15px">${fmtINR(100+payINR)}</td></tr>
+      </table>
+      <p style="color:rgba(255,255,255,0.5);font-size:12px;text-align:center;margin-top:14px">All payments processed within one week. Questions: <strong style="color:var(--amber)">puneet.arora@mdi.ac.in</strong></p>
+      <p style="color:rgba(255,255,255,0.25);font-size:11px;text-align:center;margin-top:8px">ID: ${state.pid} · MDI Gurgaon · AEA RCT Registry</p>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SUBMISSION HANDLERS
+// ═══════════════════════════════════════════════════════════════════════════
+function randomPayRound(){ state.payRound=Math.floor(Math.random()*3)+1; }
+function randomCondition(){
+  const arms=["Control","Luck","Skill","LuckReflect"];
+  const idx=Math.floor(Math.random()*4);
+  state.condition=arms[idx]; state.conditionNum=idx+1;
+}
+function randomLotteryOrder(){
+  state.lotteryOrder=Math.random()<0.5?"HL_first":"LA_first";
+}
+
+function startStudy(){
+  state.pid=uid();
+  randomCondition();
+  randomLotteryOrder();
+  console.log("Assigned:",state.condition,"| Lotteries:",state.lotteryOrder,"| PID:",state.pid);
+  document.getElementById("app").innerHTML=`
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div><div class="progress-label">0% complete</div></div>
+    <div class="shell" id="sections-wrap"></div>`;
+  goSection("consent");
+}
+
+function submitConsent(){
+  const v=getChecked("consent");
+  if(!v){document.getElementById("err-consent").style.display="block";return;}
+  if(v==="2"){
+    document.getElementById("sections-wrap").innerHTML=`<div class="end-screen"><div class="end-inner"><h2 style="font-family:var(--font-h);color:var(--navy);margin-bottom:12px">Thank You</h2><p style="color:var(--slate)">You have chosen not to participate. You may close this window.</p></div></div>`;
+    return;
+  }
+  goSection("block1");
+}
+
+function submitBlock1(){
+  const req=["b1_name","b1_roll","b1_age","b1_state"];
+  const radios=["b1_gender","b1_income","b1_course","b1_invest"];
+  let ok=true;
+  req.forEach(id=>{const el=document.getElementById(id);if(!el||!el.value.trim())ok=false;});
+  radios.forEach(n=>{if(!getChecked(n))ok=false;});
+  if(!ok){document.getElementById("err-b1").style.display="block";return;}
+  const d={};
+  req.forEach(id=>d[id]=document.getElementById(id).value);
+  radios.forEach(n=>d[n]=getChecked(n));
+  const cat=document.getElementById("b1_cat");
+  if(cat) d.b1_cat=cat.value;
+  state.answers.block1=d;
+  saveBlock("B1_Demographics",d);
+  goSection("block2");
+}
+
+function submitBlock2(){
+  let ok=true;
+  FL_QUESTIONS.forEach(q=>{if(!getChecked(q.id))ok=false;});
+  if(!ok){document.getElementById("err-b2").style.display="block";return;}
+  if(state.b2Timer) clearInterval(state.b2Timer);
+  const correct=[0,1,2,3,4].filter(i=>{const q=FL_QUESTIONS[i];return getChecked(q.id)===q.correct;}).length;
+  const d={};
+  FL_QUESTIONS.forEach(q=>{d[q.id]=getChecked(q.id);});
+  d.fl_score=correct; d.fl_order=state.fl2RandomOrder.join(",");
+  state.answers.block2=d;
+  saveBlock("B2_FinLit",d);
+  goSection("block3");
+}
+
+function submitBlock4(){
+  if(state.condition==="LuckReflect"){
+    const checked=document.querySelectorAll("#ref-goals input:checked");
+    if(checked.length!==2){document.getElementById("err-ref").style.display="block";return;}
+    state.answers.ref_goals=Array.from(checked).map(c=>c.value);
+  }
+  saveBlock("B4_Treatment",{condition:state.condition,conditionNum:state.conditionNum,ref_goals:state.answers.ref_goals||null});
+  if(state.condition==="Control") goSection("lottery_a");
+  else goSection("block4r");
+}
+
+function submitRecall(){
+  const how=getChecked("recall_how");
+  const amt=getChecked("recall_amt");
+  if(!how||!amt){document.getElementById("err-recall").style.display="block";return;}
+  const howCorrect=(state.condition==="Skill")?(how==="1"):(how==="1");
+  const amtCorrect=amt==="2";
+  if(!howCorrect||!amtCorrect){
+    // Show peer info again
+    const rp=document.getElementById("recall-reprompt");
+    const info=state.condition==="Skill"
+      ?"Participant P-42 earned 40 percentage points above cash through deliberate analysis and careful asset selection."
+      :"Participant P-42 earned 40 percentage points above cash through a randomly assigned allocation that coincided with favourable market draws.";
+    rp.innerHTML=`<div class="warn-box"><strong>Not quite.</strong> ${info} Please review and proceed.</div>`;
+    rp.style.display="block";
+  }
+  saveBlock("B4_Recall",{recall_how:how,recall_amt:amt,how_correct:howCorrect,amt_correct:amtCorrect});
+  goSection("lottery_a");
+}
+
+function submitHL(){
+  const vals=[];
+  for(let i=0;i<10;i++){const v=getChecked(`hl_${i}`);if(!v){document.getElementById("err-hl").style.display="block";return;}vals.push(v);}
+  document.getElementById("err-hl").style.display="none";
+  const sw=vals.findIndex((v,i)=>v==="B"&&(i===0||vals[i-1]==="A"))+1||10;
+  const d={hl_responses:vals.join(","),hl_switch:sw};
+  state.answers.hl=d;
+  saveBlock("B5_HoltLaury",d);
+  goSection("lottery_b");
+}
+
+function submitLA(){
+  const vals=[];
+  for(let i=0;i<6;i++){const v=getChecked(`la_${i}`);if(!v){document.getElementById("err-la").style.display="block";return;}vals.push(v);}
+  document.getElementById("err-la").style.display="none";
+  const sw=vals.findIndex(v=>v==="reject")+1||7;
+  const d={la_responses:vals.join(","),la_switch:sw};
+  state.answers.la=d;
+  saveBlock("B5b_LossAversion",d);
+  // Both lotteries done - always go to round 1
+  goSection("block6");
+}
+
+function submitRound(num,next){
+  const keys=["cash","L","M","H","V"];
+  const alloc={};
+  let total=0;
+  keys.forEach(k=>{const el=document.getElementById(`R${num}_${k}`);const v=parseFloat(el?.value)||0;alloc[k]=v;total+=v;});
+  if(total!==ENDOWMENT){document.getElementById(`err-round${num}`).style.display="block";return;}
+  document.getElementById(`err-round${num}`).style.display="none";
+  state.allocs[`R${num}`]=alloc;
+  const hiRisk=((alloc.H||0)+(alloc.V||0))/ENDOWMENT;
+  saveBlock(`B_Round${num}`,{...alloc,hi_risk_share:hiRisk.toFixed(4),cash_share:((alloc.cash||0)/ENDOWMENT).toFixed(4)});
+  goSection(next);
+}
+
+function submitSelfAssess(){
+  const v=getChecked("self_attr");
+  if(!v){document.getElementById("err-self").style.display="block";return;}
+  state.answers.self_attr=v;
+  saveBlock("B_SelfAssess",{self_attr:v});
+  goSection("block9");
+}
+
+function submitBlock9(){
+  const v=getChecked("belief_yn");
+  if(!v){document.getElementById("err-b9").style.display="block";return;}
+  saveBlock("B9_Belief",{belief_yn:v});
+  goSection("block10");
+}
+
+function submitBlock10(){
+  let ok=true;
+  for(let i=0;i<10;i++){if(!getChecked(`bfi_${i}`)){ok=false;break;}}
+  for(let i=0;i<11;i++){if(!getChecked(`sco_${i}`)){ok=false;break;}}
+  if(!getChecked("mc1")) ok=false;
+  if(!ok){document.getElementById("err-b10").style.display="block";return;}
+  const d={bfi:[...Array(10)].map((_,i)=>getChecked(`bfi_${i}`)).join(","),sco:[...Array(11)].map((_,i)=>getChecked(`sco_${i}`)).join(","),mc1:getChecked("mc1")};
+  saveBlock("B10_Personality",d);
+  goSection("block11");
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ATTACH HANDLERS (timers, live alloc totals)
+// ═══════════════════════════════════════════════════════════════════════════
+function attachHandlers(sec){
+  if(sec==="block2"){
+    let secs=180;
+    const bar=document.getElementById("timer-bar");
+    const lbl=document.getElementById("timer-label");
+    state.b2Timer=setInterval(()=>{
+      secs--;
+      const pct=Math.max(0,secs/180*100);
+      if(bar) bar.style.width=pct+"%";
+      if(bar) bar.style.background=secs<30?"var(--red)":secs<60?"var(--amber)":"var(--green)";
+      const m=Math.floor(secs/60),s=secs%60;
+      if(lbl) lbl.textContent=`Time remaining: ${m}:${s.toString().padStart(2,"0")}`;
+      if(secs<=0){clearInterval(state.b2Timer);submitBlock2();}
+    },1000);
+  }
+  if(["block6","block7","block8"].includes(sec)){
+    const rMap={block6:"R1",block7:"R2",block8:"R3"};
+    const round=rMap[sec];
+    document.querySelectorAll(`input[id^="${round}_"]`).forEach(el=>el.addEventListener("input",()=>updateAllocTotal(round)));
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PAYMENT ROUND REVEAL
+// ═══════════════════════════════════════════════════════════════════════════
+function revealPayRound(){
+  document.getElementById("reveal-btn").style.display="none";
+  document.getElementById("pay-reveal").style.display="block";
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
+document.getElementById("app").innerHTML=renderCover();
+</script>
+</body>
+</html>
