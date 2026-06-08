@@ -157,6 +157,10 @@ const state = {
   hlSwitched:     false,
   laSwitched:     false,
   fl2RandomOrder: null,
+  hlResult:       null,
+  laResult:       null,
+  hlPayRow:       null,
+  laPayRow:       null,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -242,13 +246,12 @@ function runExplorer(){
     <div style="background:var(--off);border-radius:10px;padding:14px 16px;border:1.5px solid var(--light)">
       <div class="sec-label" style="margin:0 0 10px">Simulated Result</div>
       <table class="inst-table" style="margin:0 0 12px">
-        <thead><tr><th>Asset</th><th>Allocated</th><th>Return Profile</th><th>This Run</th><th>Ending Units</th></tr></thead>
+        <thead><tr><th>Asset</th><th>Allocated</th><th>Return Profile</th><th>Your Return</th><th>Final Amount</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <div style="font-size:15px;font-weight:600">
         Portfolio Return: <span class="${retClass}">${fmt(portR)}</span>
         &nbsp;|&nbsp; Ending: <strong>${endEU.toLocaleString("en-IN")} units</strong>
-        &nbsp;|&nbsp; <span style="color:var(--green)">Payout: <strong>₹${(endEU/100).toFixed(2)}</strong></span>
       </div>
       <div style="font-size:12px;color:var(--slate);margin-top:6px">${portR<0?"Note: risky assets can produce losses — this is expected behaviour.":"Note: returns vary each run due to random draws."}</div>
     </div>`;
@@ -412,6 +415,7 @@ function renderBlock1(){
         <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="2"><span>₹10 – 15 lakh</span></label>
         <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="3"><span>₹15 – 20 lakh</span></label>
         <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="4"><span>₹20 – 25 lakh</span></label>
+        <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="5"><span>₹25 lakh and above</span></label>
       </div>
     </div>
     <div class="q-block"><div class="q-label"><span class="q-num">7</span>Course currently enrolled in</div>
@@ -515,6 +519,7 @@ function renderBlock3(){
   const assetRows=Object.entries(ASSETS).map(([k,a])=>`
     <tr><td><strong>${a.label}</strong></td><td>${a.desc}</td>
     <td style="text-align:center">${a.ret}</td>
+    <td style="text-align:center">${a.sd===0?"None":"±"+a.sd+"%"}</td>
     <td style="text-align:center">${a.range}</td></tr>`).join("");
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Block 3</span><h2 class="card-title">How the Investment Task Works</h2></div>
@@ -526,7 +531,7 @@ function renderBlock3(){
     </div>
     <div class="sec-label">Asset Menu</div>
     <table class="inst-table">
-      <thead><tr><th>Asset</th><th>Description</th><th>Expected Return</th><th>Return Range</th></tr></thead>
+      <thead><tr><th>Asset</th><th>Description</th><th>Expected Return</th><th>Risk Range</th><th>Return Range</th></tr></thead>
       <tbody>${assetRows}</tbody>
     </table>
     <div class="sec-label">Example</div>
@@ -537,6 +542,7 @@ function renderBlock3(){
       <em style="font-size:12px">If Asset M had drawn −9%: ending = 47,300 units → payout = ₹473. Risky assets can lose.</em>
     </div>
     <div class="sec-label">Try It Yourself — Return Explorer</div>
+    <p style="font-size:13px;color:var(--slate);margin-bottom:10px">For each simulation, a random number within the return range is independently drawn for each of the five asset classes.</p>
     <p style="font-size:13.5px;color:var(--slate);margin-bottom:12px">Enter any allocation and simulate a return. Try as many times as you like. <strong>This is not recorded and does not count toward payment.</strong></p>
     <div class="alloc-grid" id="exp-grid">
       ${Object.entries(ASSETS).map(([k,a])=>`
@@ -735,6 +741,8 @@ function renderLotteryB(){
 
 function renderHL(){
   progress(52);
+  state.hlSwitched=false;
+  state.hlPayRow=null;
   const probs=["10%/90%","20%/80%","30%/70%","40%/60%","50%/50%","60%/40%","70%/30%","80%/20%","90%/10%","100%/0%"];
   const aOpts=Array(9).fill("₹200 or ₹160").concat(["₹200 (certain)"]);
   const bOpts=Array(9).fill("₹350 or ₹10").concat(["₹350 (certain)"]);
@@ -753,29 +761,56 @@ function renderHL(){
       <tbody>${rows}</tbody>
     </table>
     <div id="err-hl" class="error-box">Please answer all 10 rows.</div>
+    <div id="hl-pay-row-box" style="display:none;margin-top:12px;padding:12px 16px;background:var(--amber-lt);border:1.5px solid var(--amber);border-radius:8px;font-size:13.5px;text-align:center">
+      <span style="color:var(--dark)">🎲 <strong>Row <span id="hl-pay-row-num"></span></strong> has been randomly selected for payment from this task.</span>
+    </div>
     ${navRow("submitHL()")}
   </div>`;
 }
 
 function hlChange(row,choice){
-  if(choice==="B"){
-    state.hlSwitched=true;
-    // Disable all Option A for rows > current row
-    for(let i=row+1;i<10;i++){
-      const aEl=document.getElementById(`hl_${i}_A`);
-      if(aEl){aEl.disabled=true;aEl.closest("label").style.opacity="0.4";}
+  // Find the earliest row that currently has B selected
+  let firstB=-1;
+  for(let i=0;i<10;i++){
+    const v=getChecked(`hl_${i}`);
+    if(v==="B"){firstB=i;break;}
+  }
+  // Enable/disable Option A for all rows based on firstB
+  for(let i=0;i<10;i++){
+    const aEl=document.getElementById(`hl_${i}_A`);
+    const bEl=document.getElementById(`hl_${i}_B`);
+    if(!aEl) continue;
+    if(firstB>=0 && i>firstB){
+      // Row is after first B — disable A, keep B enabled
+      aEl.disabled=true;
+      aEl.closest("label").style.opacity="0.4";
+      if(bEl){bEl.disabled=false;bEl.closest("label").style.opacity="1";}
+    } else {
+      // Row is before or at firstB — fully unlocked
+      aEl.disabled=false;
+      aEl.closest("label").style.opacity="1";
+      if(bEl){bEl.disabled=false;bEl.closest("label").style.opacity="1";}
     }
   }
-  if(choice==="A"&&state.hlSwitched){
-    // Cannot choose A after switching to B — revert
-    const el=document.getElementById(`hl_${row}_A`);
-    if(el){el.checked=false;}
-    alert("Once you have chosen the riskier option in a row, you cannot switch back to the safer option.");
+  state.hlSwitched = firstB>=0;
+  checkHLComplete();
+}
+
+function checkHLComplete(){
+  let allDone=true;
+  for(let i=0;i<10;i++){if(!getChecked(`hl_${i}`)){allDone=false;break;}}
+  if(allDone){
+    if(!state.hlPayRow) state.hlPayRow=Math.floor(Math.random()*10)+1;
+    const box=document.getElementById("hl-pay-row-box");
+    const num=document.getElementById("hl-pay-row-num");
+    if(box&&num){num.textContent=state.hlPayRow;box.style.display="block";}
   }
 }
 
 function renderLA(){
   progress(52);
+  state.laSwitched=false;
+  state.laPayRow=null;
   const losses=[60,90,120,150,175,200];
   const rows=losses.map((loss,i)=>`<tr>
     <td class="row-lbl">${i+1}</td>
@@ -792,22 +827,49 @@ function renderLA(){
       <tbody>${rows}</tbody>
     </table>
     <div id="err-la" class="error-box">Please answer all 6 rows.</div>
+    <div id="la-pay-row-box" style="display:none;margin-top:12px;padding:12px 16px;background:var(--amber-lt);border:1.5px solid var(--amber);border-radius:8px;font-size:13.5px;text-align:center">
+      <span style="color:var(--dark)">🎲 <strong>Row <span id="la-pay-row-num"></span></strong> has been randomly selected for payment from this task.</span>
+    </div>
     ${navRow("submitLA()")}
   </div>`;
 }
 
 function laChange(row,choice){
-  if(choice==="reject"){
-    state.laSwitched=true;
-    for(let i=row+1;i<6;i++){
-      const aEl=document.getElementById(`la_${i}_accept`);
-      if(aEl){aEl.disabled=true;aEl.closest("label").style.opacity="0.4";}
+  // Find the earliest row that currently has reject selected
+  let firstR=-1;
+  for(let i=0;i<6;i++){
+    const v=getChecked(`la_${i}`);
+    if(v==="reject"){firstR=i;break;}
+  }
+  // Enable/disable Accept for all rows based on firstR
+  for(let i=0;i<6;i++){
+    const aEl=document.getElementById(`la_${i}_accept`);
+    const rEl=document.getElementById(`la_${i}_reject`);
+    if(!aEl) continue;
+    if(firstR>=0 && i>firstR){
+      // Row is after first reject — disable accept
+      aEl.disabled=true;
+      aEl.closest("label").style.opacity="0.4";
+      if(rEl){rEl.disabled=false;rEl.closest("label").style.opacity="1";}
+    } else {
+      // Row is before or at firstR — fully unlocked
+      aEl.disabled=false;
+      aEl.closest("label").style.opacity="1";
+      if(rEl){rEl.disabled=false;rEl.closest("label").style.opacity="1";}
     }
   }
-  if(choice==="accept"&&state.laSwitched){
-    const el=document.getElementById(`la_${row}_accept`);
-    if(el){el.checked=false;}
-    alert("Once you have rejected a gamble, you cannot accept a later one.");
+  state.laSwitched = firstR>=0;
+  checkLAComplete();
+}
+
+function checkLAComplete(){
+  let allDone=true;
+  for(let i=0;i<6;i++){if(!getChecked(`la_${i}`)){allDone=false;break;}}
+  if(allDone){
+    if(!state.laPayRow) state.laPayRow=Math.floor(Math.random()*6)+1;
+    const box=document.getElementById("la-pay-row-box");
+    const num=document.getElementById("la-pay-row-num");
+    if(box&&num){num.textContent=state.laPayRow;box.style.display="block";}
   }
 }
 
@@ -863,10 +925,10 @@ function renderBlock9(){
     ${HONESTY}
     <div class="info-box">This question carries a bonus of <strong>₹50</strong> if you answer correctly.</div>
     <div class="q-block">
-      <div class="q-label"><span class="q-num">Q</span>If you had divided your 50,000 units equally across all five assets (10,000 in each) and held for all three rounds, do you think your average portfolio value would have exceeded <strong>20,000 units</strong>?</div>
+      <div class="q-label"><span class="q-num">Q</span>Do you think your average porthink you will make at least <strong>20,000 EU returns</strong> on your <strong>50,000 EU</strong> investment?</div>
       <div class="options">
-        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="yes"><span>Yes — I believe it would have exceeded 20,000 units on average</span></label>
-        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="no"><span>No — I believe it would not have exceeded 20,000 units on average</span></label>
+        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="yes"><span>Yes — I think I will make at least 20,000 EU in returns</span></label>
+        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="no"><span>No — I do not think I will make 20,000 EU in returns</span></label>
       </div>
     </div>
     <div id="err-b9" class="error-box">Please select an answer.</div>
@@ -936,7 +998,7 @@ function renderBlock10(){
     <div class="q-block">
       <div class="q-label"><span class="q-num">MC</span>How motivated were you to match or exceed the peer's return during the investment rounds?</div>
       <div class="options">
-        ${["Strongly disagree","Disagree","Neither agree nor disagree","Agree","Strongly agree"].map((l,i)=>`<label class="opt" onclick="selectOpt(this,'mc1')"><input type="radio" name="mc1" value="${i+1}"><span>${l}</span></label>`).join("")}
+        ${["Not at all motivated","Slightly motivated","Somewhat motivated","Moderately motivated","Quite motivated","Very motivated","Extremely motivated"].map((l,i)=>`<label class="opt" onclick="selectOpt(this,'mc1')"><input type="radio" name="mc1" value="${i+1}"><span>${l}</span></label>`).join("")}
       </div>
     </div>
     <div id="err-b10" class="error-box">Please answer all questions.</div>
@@ -946,7 +1008,7 @@ function renderBlock10(){
 
 // ── BLOCK 11 — RESULTS ────────────────────────────────────────────────────
 function renderBlock11(){
-  progress(100);
+  progress(96);
   randomPayRound();
   const rounds=[1,2,3].map(n=>{
     const alloc=state.allocs[`R${n}`];
@@ -954,11 +1016,30 @@ function renderBlock11(){
     return{n,alloc,portfolio,breakdown};
   });
   state.returns=rounds;
-  const payResult=rounds[state.payRound-1];
-  const payEU=Math.round(ENDOWMENT*(1+parseFloat(payResult.portfolio.toFixed(1))/100));
+  const payEU=Math.round(ENDOWMENT*(1+parseFloat(rounds[state.payRound-1].portfolio.toFixed(1))/100));
   const payINR=payEU/100;
-  const cardsHTML=rounds.map(r=>{
-    const isPay=r.n===state.payRound;
+  const hl=state.hlResult;
+  const la=state.laResult;
+  const l1IsHL=state.lotteryOrder==="HL_first";
+
+  function lotteryCard(res,label,isHL){
+    if(!res) return `<div class="return-card"><div class="return-card-header"><span>${label}</span></div><div class="return-body"><p style="color:var(--slate);font-size:13px">No data.</p></div></div>`;
+    let rows="";
+    if(isHL){
+      rows=`<div class="return-summary" style="margin-top:6px"><span>Row randomly selected</span><span style="font-weight:600">Row ${res.row} — Option ${res.choice}</span></div>
+        <div class="return-summary" style="margin-top:6px"><span>Outcome drawn</span><span style="font-weight:600">${res.high?"High payoff":"Low payoff"}</span></div>
+        <div class="return-summary" style="margin-top:6px;background:var(--amber-lt);border-color:var(--amber)"><span style="font-weight:600">Your payout</span><span style="font-weight:700;color:var(--green);font-size:15px">${fmtINR(res.payout)}</span></div>`;
+    } else {
+      const col=res.payout>0?"var(--green)":res.payout<0?"var(--red)":"var(--slate)";
+      const ot=res.choice==="reject"?"Rejected — no gamble played":res.heads?"Heads — win ₹200":"Tails — lose ₹"+[60,90,120,150,175,200][res.row-1];
+      rows=`<div class="return-summary" style="margin-top:6px"><span>Row randomly selected</span><span style="font-weight:600">Row ${res.row}</span></div>
+        <div class="return-summary" style="margin-top:6px"><span>Outcome drawn</span><span style="font-weight:600">${ot}</span></div>
+        <div class="return-summary" style="margin-top:6px;background:var(--amber-lt);border-color:var(--amber)"><span style="font-weight:600">Your payout</span><span style="font-weight:700;font-size:15px;color:${col}">${res.payout>=0?fmtINR(res.payout):"-"+fmtINR(-res.payout)}</span></div>`;
+    }
+    return `<div class="return-card"><div class="return-card-header"><span>${label}</span></div><div class="return-body">${rows}</div></div>`;
+  }
+
+  const roundCards=rounds.map(r=>{
     const retClass=r.portfolio>0?"ret-pos":r.portfolio<0?"ret-neg":"ret-zero";
     const assetBoxes=Object.entries(ASSETS).map(([k,a])=>{
       const amt=r.alloc[k]||0;
@@ -972,47 +1053,64 @@ function renderBlock11(){
     }).join("");
     const endEU=Math.round(ENDOWMENT*(1+parseFloat(r.portfolio.toFixed(1))/100));
     return `<div class="return-card">
-      <div class="return-card-header">
-        <span>Round ${r.n}</span>
-        ${isPay?`<span class="return-pay-badge">★ Payment Round</span>`:""}
-      </div>
+      <div class="return-card-header"><span>Investment Round ${r.n}</span></div>
       <div class="return-body">
         <div class="return-assets">${assetBoxes}</div>
         <div class="return-summary"><span>Portfolio return</span><span class="return-total ${retClass}">${fmt(r.portfolio)}</span></div>
-        <div class="return-summary" style="margin-top:6px"><span>Ending units</span><span style="font-weight:600">${endEU.toLocaleString("en-IN")}</span></div>
-        ${isPay?`<div class="return-summary" style="margin-top:6px;background:var(--amber-lt);border-color:var(--amber)"><span style="font-weight:600">Your INR payout (units ÷ 100)</span><span style="font-weight:700;color:var(--green);font-size:16px">${fmtINR(endEU/100)}</span></div>`:""}
+        <div class="return-summary" style="margin-top:6px"><span>Final amount</span><span style="font-weight:600">${endEU.toLocaleString("en-IN")} units</span></div>
       </div>
     </div>`;
   }).join("");
-  saveBlock("B11_Returns",{pay_round:state.payRound,r1:rounds[0].portfolio,r2:rounds[1].portfolio,r3:rounds[2].portfolio,pay_eu:payEU,pay_inr:payINR});
+
+  saveBlock("B11_Returns",{pay_round:state.payRound,r1:rounds[0].portfolio,r2:rounds[1].portfolio,r3:rounds[2].portfolio,pay_eu:payEU,pay_inr:payINR,hl_payout:hl?.payout||0,la_payout:la?.payout||0});
+
   return `<div class="card">
-    <div class="card-header"><span class="block-badge">Results</span><h2 class="card-title">Your Investment Results</h2></div>
-    ${cardsHTML}
+    <div class="card-header"><span class="block-badge">Your Results</span><h2 class="card-title">All Task Outcomes</h2></div>
+    <div class="info-box" style="margin-bottom:14px">Returns across all three investment rounds are determined by independent random draws from the return ranges shown in the asset table. Lottery rows and outcomes were also randomly drawn.</div>
+    <div class="sec-label">Lottery 1 — ${l1IsHL?"Choice Task":"Gamble Task"}</div>
+    ${lotteryCard(l1IsHL?hl:la,"Lottery 1",l1IsHL)}
+    <div class="sec-label" style="margin-top:16px">Lottery 2 — ${l1IsHL?"Gamble Task":"Choice Task"}</div>
+    ${lotteryCard(l1IsHL?la:hl,"Lottery 2",!l1IsHL)}
+    <div class="sec-label" style="margin-top:16px">Investment Rounds</div>
+    ${roundCards}
     <div style="margin-top:20px;padding:16px 20px;background:var(--amber-lt);border:1.5px solid var(--amber);border-radius:10px;text-align:center">
-      <p style="font-size:13.5px;color:var(--dark);margin-bottom:12px">All three rounds are shown above. Click below to reveal which round was selected for your payment.</p>
-      <button class="btn btn-primary" onclick="revealPayRound()" id="reveal-btn">Reveal My Payment Round →</button>
-      <div id="pay-reveal" style="display:none;margin-top:14px;font-size:16px;font-weight:700;color:var(--navy)">
-        ★ Round ${state.payRound} was selected for your payment.
-      </div>
+      <p style="font-size:13.5px;color:var(--dark);margin-bottom:12px">All task results are shown above. Click below to reveal which investment round was <strong>randomly</strong> selected for your payment.</p>
+      <button class="btn btn-primary" onclick="revealAndFinish()" id="reveal-btn">Reveal My Payment Round →</button>
     </div>
-    <div style="margin-top:24px;padding:22px;background:var(--navy);border-radius:10px">
-      <h3 style="font-family:var(--font-h);color:var(--white);font-size:18px;margin-bottom:14px;text-align:center">Thank You!</h3>
-      <table style="width:100%;font-size:13px;border-collapse:collapse">
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:7px 4px;color:rgba(255,255,255,0.6)">Fixed participation fee</td><td style="padding:7px 4px;text-align:right;color:var(--white);font-weight:600">₹100</td></tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:7px 4px;color:rgba(255,255,255,0.6)">Investment Round ${state.payRound} (${payEU.toLocaleString("en-IN")} units ÷ 100)</td><td style="padding:7px 4px;text-align:right;color:var(--amber);font-weight:600">${fmtINR(payINR)}</td></tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:7px 4px;color:rgba(255,255,255,0.6)">Lottery 1 payout (determined at processing)</td><td style="padding:7px 4px;text-align:right;color:rgba(255,255,255,0.45);font-style:italic">₹10 – ₹350</td></tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:7px 4px;color:rgba(255,255,255,0.6)">Lottery 2 payout (determined at processing)</td><td style="padding:7px 4px;text-align:right;color:rgba(255,255,255,0.45);font-style:italic">−₹200 to +₹200</td></tr>
-        <tr><td style="padding:10px 4px;color:var(--white);font-weight:700;font-size:14px">Confirmed payout (fee + investment)</td><td style="padding:10px 4px;text-align:right;color:var(--amber);font-weight:700;font-size:15px">${fmtINR(100+payINR)}</td></tr>
-      </table>
-      <p style="color:rgba(255,255,255,0.5);font-size:12px;text-align:center;margin-top:14px">All payments processed within one week. Questions: <strong style="color:var(--amber)">puneet.arora@mdi.ac.in</strong></p>
-      <p style="color:rgba(255,255,255,0.25);font-size:11px;text-align:center;margin-top:8px">ID: ${state.pid} · MDI Gurgaon · AEA RCT Registry</p>
-    </div>
+    <div id="final-section" style="display:none;margin-top:20px"></div>
   </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// SUBMISSION HANDLERS
-// ═══════════════════════════════════════════════════════════════════════════
+function revealAndFinish(){
+  document.getElementById("reveal-btn").style.display="none";
+  const hl=state.hlResult;
+  const la=state.laResult;
+  const l1IsHL=state.lotteryOrder==="HL_first";
+  const l1Pay=(l1IsHL?hl:la)?.payout||0;
+  const l2Pay=(l1IsHL?la:hl)?.payout||0;
+  const payEU=Math.round(ENDOWMENT*(1+parseFloat(state.returns[state.payRound-1].portfolio.toFixed(1))/100));
+  const payINR=payEU/100;
+  const total=Math.max(100,100+payINR+l1Pay+l2Pay);
+  const l1Col=l1Pay>=0?"color:var(--amber)":"color:var(--red)";
+  const l2Col=l2Pay>=0?"color:var(--amber)":"color:var(--red)";
+  document.getElementById("final-section").innerHTML=`
+    <div style="padding:22px;background:var(--navy);border-radius:10px">
+      <h3 style="font-family:var(--font-h);color:var(--white);font-size:18px;margin-bottom:6px;text-align:center">Thank You!</h3>
+      <p style="color:rgba(255,255,255,0.6);font-size:13px;text-align:center;margin-bottom:16px">★ Investment Round <strong style="color:var(--amber)">${state.payRound}</strong> was randomly selected for your payment.</p>
+      <table style="width:100%;font-size:13px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:8px 4px;color:rgba(255,255,255,0.6)">Fixed participation fee</td><td style="padding:8px 4px;text-align:right;color:var(--white);font-weight:600">₹100</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:8px 4px;color:rgba(255,255,255,0.6)">Investment Round ${state.payRound} (${payEU.toLocaleString("en-IN")} units ÷ 100)</td><td style="padding:8px 4px;text-align:right;color:var(--amber);font-weight:600">${fmtINR(payINR)}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:8px 4px;color:rgba(255,255,255,0.6)">Lottery 1 payout (Row ${(l1IsHL?hl:la)?.row||"—"})</td><td style="padding:8px 4px;text-align:right;font-weight:600;${l1Col}">${l1Pay>=0?fmtINR(l1Pay):"-"+fmtINR(-l1Pay)}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:8px 4px;color:rgba(255,255,255,0.6)">Lottery 2 payout (Row ${(l1IsHL?la:hl)?.row||"—"})</td><td style="padding:8px 4px;text-align:right;font-weight:600;${l2Col}">${l2Pay>=0?fmtINR(l2Pay):"-"+fmtINR(-l2Pay)}</td></tr>
+        <tr style="background:rgba(255,255,255,0.06)"><td style="padding:10px 4px;color:var(--white);font-weight:700;font-size:14px">Total payment</td><td style="padding:10px 4px;text-align:right;color:var(--amber);font-weight:700;font-size:16px">${fmtINR(total)}</td></tr>
+      </table>
+      <p style="color:rgba(255,255,255,0.5);font-size:12px;text-align:center;margin-top:14px">All payments processed within one week.<br>Questions: <strong style="color:var(--amber)">puneet.arora@mdi.ac.in</strong></p>
+      <p style="color:rgba(255,255,255,0.25);font-size:11px;text-align:center;margin-top:8px">ID: ${state.pid} · MDI Gurgaon · AEA RCT Registry</p>
+    </div>`;
+  document.getElementById("final-section").style.display="block";
+  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+}
+
 function randomPayRound(){ state.payRound=Math.floor(Math.random()*3)+1; }
 function randomCondition(){
   const arms=["Control","Luck","Skill","LuckReflect"];
@@ -1110,10 +1208,18 @@ function submitHL(){
   for(let i=0;i<10;i++){const v=getChecked(`hl_${i}`);if(!v){document.getElementById("err-hl").style.display="block";return;}vals.push(v);}
   document.getElementById("err-hl").style.display="none";
   const sw=vals.findIndex((v,i)=>v==="B"&&(i===0||vals[i-1]==="A"))+1||10;
-  const d={hl_responses:vals.join(","),hl_switch:sw};
+  const hlRow=(state.hlPayRow||Math.floor(Math.random()*10)+1)-1;
+  const hlProb=(hlRow+1)/10;
+  const hlHigh=Math.random()<hlProb;
+  const hlChoice=vals[hlRow];
+  const hlPayout=hlChoice==="A"?(hlHigh?200:160):(hlHigh?350:10);
+  state.hlResult={row:hlRow+1,choice:hlChoice,high:hlHigh,payout:hlPayout};
+  const d={hl_responses:vals.join(","),hl_switch:sw,hl_pay_row:hlRow+1,hl_choice:hlChoice,hl_high:hlHigh,hl_payout:hlPayout};
   state.answers.hl=d;
   saveBlock("B5_HoltLaury",d);
-  goSection("lottery_b");
+  // If HL was Lottery A (HL_first), go to Lottery B next; otherwise both done, go to round 1
+  if(state.lotteryOrder==="HL_first") goSection("lottery_b");
+  else goSection("block6");
 }
 
 function submitLA(){
@@ -1121,11 +1227,19 @@ function submitLA(){
   for(let i=0;i<6;i++){const v=getChecked(`la_${i}`);if(!v){document.getElementById("err-la").style.display="block";return;}vals.push(v);}
   document.getElementById("err-la").style.display="none";
   const sw=vals.findIndex(v=>v==="reject")+1||7;
-  const d={la_responses:vals.join(","),la_switch:sw};
+  const laRow=(state.laPayRow||Math.floor(Math.random()*6)+1)-1;
+  const laChoice=vals[laRow];
+  const losses=[60,90,120,150,175,200];
+  let laPayout=0;
+  let laHeads=false;
+  if(laChoice==="accept"){laHeads=Math.random()<0.5;laPayout=laHeads?200:-losses[laRow];}
+  state.laResult={row:laRow+1,choice:laChoice,heads:laHeads,payout:laPayout};
+  const d={la_responses:vals.join(","),la_switch:sw,la_pay_row:laRow+1,la_choice:laChoice,la_payout:laPayout};
   state.answers.la=d;
   saveBlock("B5b_LossAversion",d);
-  // Both lotteries done - always go to round 1
-  goSection("block6");
+  // If LA was Lottery A, go to Lottery B next; otherwise both done, go to round 1
+  if(state.lotteryOrder==="LA_first") goSection("lottery_b");
+  else goSection("block6");
 }
 
 function submitRound(num,next){
@@ -1195,10 +1309,6 @@ function attachHandlers(sec){
 // ═══════════════════════════════════════════════════════════════════════════
 // PAYMENT ROUND REVEAL
 // ═══════════════════════════════════════════════════════════════════════════
-function revealPayRound(){
-  document.getElementById("reveal-btn").style.display="none";
-  document.getElementById("pay-reveal").style.display="block";
-}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // INIT
