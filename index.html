@@ -137,7 +137,7 @@ const ASSETS = {
   V:   { label:"Asset V", mean:20, sd:40, ret:"+20%", range:"-20% to +60%",        desc:"Derivatives / speculative" },
 };
 const ENDOWMENT   = 50000;
-const PEER_RETURN = 40;
+const PEER_EARNINGS_EU = 70000; // peer earned 70,000 EU (40% up from the 50,000 EU endowment)
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STATE
@@ -290,10 +290,12 @@ function goSection(sec){
     block1:renderBlock1, block2:renderBlock2,
     block3:renderBlock3, block4:renderBlock4,
     block4r:renderBlock4Recall,
+    prelottery:renderPreLottery,
     lottery_a:renderLotteryA, lottery_b:renderLotteryB,
     block6:()=>renderRound(1), block7:()=>renderRound(2), block8:()=>renderRound(3),
     block8s:renderSelfAssess,
     block9:renderBlock9,
+    block9b:renderBlock9b,
     block10:renderBlock10,
     block11:renderBlock11,
   };
@@ -302,8 +304,6 @@ function goSection(sec){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
-// honesty stamp — added to every card
-const HONESTY = `<div class="honesty">PLEASE ANSWER HONESTLY. YOUR RESPONSES WILL NOT AFFECT YOUR GRADES OR STANDING AT THE INSTITUTION.</div>`;
 
 // nav row — NO back button
 function navRow(nextFn,nextLabel="Continue →"){
@@ -352,7 +352,7 @@ function renderCover(){
   return `<div class="cover">
     <div class="cover-logo">Management Development Institute Gurgaon</div>
     <h1 class="cover-title">Investment Decision Study</h1>
-    <p class="cover-sub">A research study on financial decision-making. Your participation is voluntary and fully confidential. Your payout = ending EU ÷ 100 in rupees. Maximum earnings: ₹1,450.</p>
+    <p class="cover-sub">A research study on financial decision-making. Your participation is voluntary and fully confidential. Maximum earnings: ₹1,450.</p>
     <div class="cover-meta">
       <div class="meta-item"><div class="meta-label">Duration</div><div class="meta-value">20 – 25 minutes</div></div>
       <div class="meta-item"><div class="meta-label">Principal Investigator</div><div class="meta-value">Dr Puneet Arora</div></div>
@@ -366,7 +366,6 @@ function renderConsent(){
   progress(5);
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Consent</span><h2 class="card-title">Participant Information</h2></div>
-    ${HONESTY}
     <div class="info-box"><strong>What is this study?</strong> You will make a series of investment decisions using virtual currency. One of your decisions will determine your real monetary payment.</div>
     <div class="info-box"><strong>Duration & payment:</strong> Approximately 20–25 minutes. Expected payment ₹100 (minimum) up to ₹1,450 depending on your decisions, paid electronically within one week.</div>
     <div class="info-box"><strong>Voluntary:</strong> Participation is entirely voluntary. You may stop at any time. Your academic standing will not be affected in any way.</div>
@@ -390,8 +389,7 @@ function renderBlock1(){
   const stateOpts=states.map(s=>`<option value="${s}">${s}</option>`).join("");
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Block 1</span><h2 class="card-title">About You</h2></div>
-    ${HONESTY}
-    <div class="q-note" style="margin-bottom:16px;font-style:normal;color:var(--slate);font-size:13px">Your name and roll number confirm eligibility only and are stored separately from your responses.</div>
+    <div class="q-note" style="margin-bottom:16px;font-style:normal;color:var(--slate);font-size:13px">Your name and roll number confirm eligibility only and are stored separately from your responses. All responses will be kept strictly confidential and used solely for research purposes in anonymised form. Your participation and answers will in no way affect, nor be taken into consideration for, your grades or standing at the institution.</div>
     <div class="q-block"><div class="q-label"><span class="q-num">1</span>Full name</div><input type="text" id="b1_name" placeholder="Your full name"></div>
     <div class="q-block"><div class="q-label"><span class="q-num">2</span>Institute roll number</div><input type="text" id="b1_roll" placeholder="e.g. 2024001"></div>
     <div class="q-block">
@@ -409,7 +407,7 @@ function renderBlock1(){
     <div class="q-block"><div class="q-label"><span class="q-num">5</span>State / union territory of birth</div>
       <select id="b1_state"><option value="">— Select —</option>${stateOpts}</select>
     </div>
-    <div class="q-block"><div class="q-label"><span class="q-num">6</span>Family annual income</div>
+    <div class="q-block"><div class="q-label"><span class="q-num">6</span>Parents' combined annual income</div>
       <div class="options">
         <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="1"><span>₹5 – 10 lakh</span></label>
         <label class="opt" onclick="selectOpt(this,'b1_income')"><input type="radio" name="b1_income" value="2"><span>₹10 – 15 lakh</span></label>
@@ -478,10 +476,10 @@ const FL_QUESTIONS = [
   {
     id:"fl5",
     names:["Suresh","Rahul"],
-    q:(n)=>`${n[0]} buys a call option on a stock currently priced at ₹200, with a strike price of ₹220, expiring in 1 month, for a premium of ₹8. At expiry, the stock is at ₹215. What is ${n[0]}'s outcome?`,
-    opts:[["A","Profit of ₹15"],["B","Loss of ₹8 (full premium)"],["C","Loss of ₹5"],["D","No profit, no loss"]],
-    correct:"B",
-    expl:"The stock at ₹215 is below the strike of ₹220, so the call expires worthless. The full ₹8 premium paid is lost."
+    q:(n)=>`${n[0]} buys 100 shares at ₹50 each. He later sells them at ₹50 each. Ignoring transaction costs, What is ${n[0]}'s outcome?`,
+    opts:[["A","Profit of ₹500"],["B","Loss of ₹500"],["C","Profit of ₹50"],["D","No profit, no loss"]],
+    correct:"D",
+    expl:"Rohan bought 100 shares at ₹50 each and sold them at the same price of ₹50 each. Since the selling price equals the purchase price, he neither made a profit nor incurred a loss. Therefore, his net gain is ₹0 (break-even)."
   }
 ];
 
@@ -503,7 +501,6 @@ function renderBlock2(){
   }).join("");
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Block 2</span><h2 class="card-title">Financial Knowledge</h2></div>
-    ${HONESTY}
     <div class="warn-box">You have <strong>3 minutes</strong> to complete this section. Answer all questions before the timer runs out.</div>
     <div class="timer-label" id="timer-label">Time remaining: 3:00</div>
     <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timer-bar" style="width:100%"></div></div>
@@ -523,11 +520,16 @@ function renderBlock3(){
     <td style="text-align:center">${a.range}</td></tr>`).join("");
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Block 3</span><h2 class="card-title">How the Investment Task Works</h2></div>
-    ${HONESTY}
+    <div class="sec-label">Instructions</div>
     <div class="info-box">
-      • You receive <strong>50,000 units</strong> at the start of each round to invest.<br>
-      • Allocate across five assets — amounts must add up to exactly 50,000.<br>
-      • Higher expected return always comes with greater possible loss — not just higher upside.<br>
+      • At the start of each round, you receive 50,000 Experimental Units (EU) to invest.<br>
+      • Allocate the 50,000 EU across five assets. Your allocations must sum to exactly 50,000 EU.<br>
+      • Each asset can generate different returns. The return for each asset will be randomly drawn from the range shown next to it.<br>
+      • Your final earnings will be paid at the rate of 100 EU = Rs.1.<br>
+      • To help you understand the task, you will first see an example and complete a simulation exercise.<br>
+      • You will then answer a few comprehension questions.<br>
+      • You have two attempts to answer at least one comprehension question correctly.<br>
+      • If you are unable to do so, the survey will end and you will receive only the Rs.100 participation payment.<br>
     </div>
     <div class="sec-label">Asset Menu</div>
     <table class="inst-table">
@@ -548,7 +550,6 @@ function renderBlock3(){
       ${Object.entries(ASSETS).map(([k,a])=>`
         <div class="alloc-item">
           <div class="alloc-asset-name">${a.label}</div>
-          <div class="alloc-asset-sub">${a.ret} · ${a.range}</div>
           <input type="number" id="exp_${k}" min="0" max="50000" step="500" placeholder="0"
             oninput="updateExpTotal()">
         </div>`).join("")}
@@ -560,11 +561,6 @@ function renderBlock3(){
       <button class="btn" id="exp-reset-btn" onclick="resetExplorer()" style="display:none;border-color:var(--light);background:var(--white);color:var(--slate)">Try Again ↺</button>
     </div>
     <div id="exp-result" style="display:none;margin-top:14px"></div>
-    <div class="sec-label">Understanding Check</div>
-    <div style="background:#fdf0ef;border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:6px;font-size:13.5px;line-height:1.7">
-      After reading, you will answer <strong>3 short questions</strong>. You have <strong>2 attempts</strong>.<br>
-      Answer at least one correctly to proceed. Fail both attempts: survey ends, ₹100 participation fee paid.
-    </div>
     <div id="comp-section" style="display:none;margin-top:20px">
       <div class="warn-box" id="comp-banner">Attempt 1 of 2 — answer at least one correctly.</div>
       <div id="comp-q-wrap"></div>
@@ -575,7 +571,7 @@ function renderBlock3(){
       </div>
     </div>
     <div id="block3-nav" style="display:none;margin-top:16px;display:none">
-      ${navRow("goSection('block4')","Continue to Study →")}
+      ${navRow("afterComp()","Continue to Study →")}
     </div>
     ${navRow("showCompSection()",'I have read the instructions →')}
   </div>`;
@@ -628,7 +624,7 @@ function submitComp(){
     expl.style.background="#eaf3de";expl.style.borderLeftColor=getComputedStyle(document.documentElement).getPropertyValue("--green");
     expl.style.display="block";
     const btn=document.getElementById("comp-btn");
-    btn.textContent="Proceed →";btn.onclick=()=>goSection("block4");
+    btn.textContent="Proceed →";btn.onclick=afterComp;
     const nav=document.getElementById("block3-nav");
     if(nav) nav.style.display="block";
   } else {
@@ -657,22 +653,30 @@ function submitComp(){
   }
 }
 
-// ── BLOCK 4 — TREATMENT ───────────────────────────────────────────────────
+// Routing after comprehension check: Control never sees any peer information
+function afterComp(){
+  goSection(state.condition==="Control"?"block4r":"block4");
+}
+
+// ── BLOCK 4 — PEER INFORMATION (TREATMENT GROUPS ONLY) ───────────────────
 function renderBlock4(){
   progress(40);
-  let content="";
-  if(state.condition==="Control"){
-    content=`<div class="info-box">You have been paired with a previous participant for this session. Please proceed to the investment rounds.</div>`;
-  } else {
-    const isLuck=state.condition==="Luck"||state.condition==="LuckReflect";
-    const cls=isLuck?"luck":"skill";
-    const label=isLuck?"Luck":"Skill";
-    const text=isLuck
-      ?"Participant P-42 earned a return <strong>40 percentage points above the cash benchmark</strong> in the previous session. This return resulted from a randomly assigned allocation that happened to coincide with favourable market draws."
-      :"Participant P-42 earned a return <strong>40 percentage points above the cash benchmark</strong> in the previous session. This return was the result of deliberate analysis and careful asset selection. The specific strategy is proprietary and not disclosed.";
-    const peerCard=`<div class="peer-card"><div class="peer-avatar">P42</div><div class="peer-info"><div class="peer-name">Participant P-42</div><div class="peer-sub">MBA, Second Year · Partner Business School</div></div></div>`;
-    content=`${peerCard}<div class="treatment-box ${cls}"><div style="font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:${isLuck?"#7A5200":"#0C447C"};margin-bottom:6px">${label} Attribution</div><p style="font-size:14px;line-height:1.6">${text}</p><div class="gap-note">If you keep your entire endowment in cash, your peer will have outperformed you by <strong>40 percentage points</strong> this round.</div></div>`;
-  }
+  if(state.condition==="Control"){ goSection("block4r"); return ""; }
+  const isLuck=state.condition==="Luck"||state.condition==="LuckReflect";
+  const cls=isLuck?"luck":"skill";
+  const label=isLuck?"Luck":"Skill";
+  const quote=isLuck
+    ?"I believe my earnings were mainly due to luck. My investment choices happened to be matched with favorable returns."
+    :"I believe my earnings were mainly due to my investment decisions. I used an investment strategy that I thought would perform well.";
+  const peerCard=`<div class="peer-card"><div class="peer-avatar">P42</div><div class="peer-info"><div class="peer-name">Participant P-42</div><div class="peer-sub">MBA, Second Year · Partner Business School</div></div></div>`;
+  const content=`
+    <p style="font-size:14px;line-height:1.7;margin-bottom:14px">In this investment game, you have been matched with a participant who completed a similar task in an earlier session. Before you begin, we will show you some information about this participant's outcome in the task. This information is provided for reference only. The other participant's earnings will not affect your investment opportunities, returns, or earnings in any way. Your earnings will depend solely on your own investment decisions and the returns realized during the task.</p>
+    ${peerCard}
+    <div class="info-box" style="margin-bottom:14px">
+      Your paired participant ID: <strong>P-42</strong><br>
+      Your paired participant's earnings in the experiment: <strong>70,000 EU</strong>
+    </div>
+    <div class="treatment-box ${cls}"><div style="font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:${isLuck?"#7A5200":"#0C447C"};margin-bottom:6px">${label} Attribution</div><p style="font-size:14px;line-height:1.6">We asked the participant what they believed contributed most to their earnings. They responded:<br><em>"${quote}"</em></p></div>`;
   const reflHtml=state.condition==="LuckReflect"?`
     <div style="margin-top:20px;padding-top:16px;border-top:1.5px solid var(--light)">
       <div class="sec-label">Before you invest — your goals</div>
@@ -684,8 +688,7 @@ function renderBlock4(){
       <div id="err-ref" class="error-box">Please select exactly 2 goals.</div>
     </div>`:"";
   return `<div class="card">
-    <div class="card-header"><span class="block-badge">Block 4</span><h2 class="card-title">${state.condition==="Control"?"Session Information":"Your Paired Participant"}</h2></div>
-    ${HONESTY}
+    <div class="card-header"><span class="block-badge">Block 4</span><h2 class="card-title">Your Paired Participant</h2></div>
     ${content}${reflHtml}
     ${navRow("submitBlock4()")}
   </div>`;
@@ -699,34 +702,54 @@ function toggleGoal(i,el){
   else if(state.answers.ref_goals.length<2){state.answers.ref_goals.push(i);cb.checked=true;el.classList.add("selected");}
 }
 
-// ── BLOCK 4 RECALL CHECK (treatment only) ────────────────────────────────
+// ── ATTENTION CHECK QUESTIONS ─────────────────────────────────────────────
+// Treatment groups: peer earnings + attribution + one filler question.
+// Control group: filler questions only (no peer was ever mentioned to them).
+const FILLERS={
+  Control:[
+    {id:"ac_f1",q:"What is 5 + 7?",opts:["10","11","12","13"],correct:"12"},
+    {id:"ac_f2",q:"What is 14 − 6?",opts:["6","7","8","9"],correct:"8"},
+    {id:"ac_f3",q:"What is 3 × 4?",opts:["7","12","14","16"],correct:"12"},
+  ],
+  Luck:[{id:"ac_f1",q:"What is 5 + 7?",opts:["10","11","12","13"],correct:"12"}],
+  Skill:[{id:"ac_f1",q:"What is 9 + 6?",opts:["13","14","15","16"],correct:"15"}],
+  LuckReflect:[{id:"ac_f1",q:"What is 8 + 4?",opts:["10","11","12","13"],correct:"12"}],
+};
+
 function renderBlock4Recall(){
   progress(45);
-  const howOpts={
-    Luck:["A randomly assigned allocation that coincided with favourable market draws","Deliberate analysis and careful asset selection","By copying another participant","By investing only in Cash"],
-    Skill:["Deliberate analysis and careful asset selection","A randomly assigned allocation that coincided with favourable market draws","By following a standard index fund","By investing only in Cash"],
-    LuckReflect:["A randomly assigned allocation that coincided with favourable market draws","Deliberate analysis and careful asset selection","By copying another participant","By investing only in Cash"],
-  };
-  const optsHtml=howOpts[state.condition].map((o,i)=>`<label class="opt" onclick="selectOpt(this,'recall_how')"><input type="radio" name="recall_how" value="${i+1}"><span>${o}</span></label>`).join("");
+  const fillers=FILLERS[state.condition]||FILLERS.Control;
+  const fillerHtml=(startNum)=>fillers.map((f,fi)=>{
+    const opts=f.opts.map(o=>`<label class="opt" onclick="selectOpt(this,'${f.id}')"><input type="radio" name="${f.id}" value="${o}"><span>${o}</span></label>`).join("");
+    return `<div class="q-block"><div class="q-label"><span class="q-num">${startNum+fi}</span>${f.q}</div><div class="options">${opts}</div></div>`;
+  }).join("");
+  let body="";
+  if(state.condition==="Control"){
+    body=fillerHtml(1);
+  } else {
+    const isLuck=state.condition==="Luck"||state.condition==="LuckReflect";
+    const attrOpts=isLuck
+      ?[["luck","Luck — their investment choices happened to be matched with favorable returns"],["skill","Skill — they used an investment strategy that they thought would perform well"],["copy","They copied another participant"],["cash","They invested only in Cash"]]
+      :[["skill","Skill — they used an investment strategy that they thought would perform well"],["luck","Luck — their investment choices happened to be matched with favorable returns"],["copy","They copied another participant"],["cash","They invested only in Cash"]];
+    const attrHtml=attrOpts.map(([v,l])=>`<label class="opt" onclick="selectOpt(this,'ac_attr')"><input type="radio" name="ac_attr" value="${v}"><span>${l}</span></label>`).join("");
+    const amtHtml=["50,000 EU","60,000 EU","70,000 EU","80,000 EU"].map(o=>`<label class="opt" onclick="selectOpt(this,'ac_amt')"><input type="radio" name="ac_amt" value="${o}"><span>${o}</span></label>`).join("");
+    body=`
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">1</span>What were your paired participant's earnings in the experiment?</div>
+      <div class="options">${amtHtml}</div>
+    </div>
+    <div class="q-block">
+      <div class="q-label"><span class="q-num">2</span>What did your paired participant believe contributed most to their earnings?</div>
+      <div class="options">${attrHtml}</div>
+    </div>
+    ${fillerHtml(3)}`;
+  }
   return `<div class="card">
-    <div class="card-header"><span class="block-badge">Check</span><h2 class="card-title">Quick Recall Check</h2></div>
-    ${HONESTY}
-    <div class="info-box">Before proceeding, please confirm you remember the information about your paired participant.</div>
-    <div class="q-block">
-      <div class="q-label"><span class="q-num">1</span>How did Participant P-42 earn their return?</div>
-      <div class="options">${optsHtml}</div>
-    </div>
-    <div class="q-block">
-      <div class="q-label"><span class="q-num">2</span>By how much did Participant P-42 outperform the cash benchmark?</div>
-      <div class="options">
-        <label class="opt" onclick="selectOpt(this,'recall_amt')"><input type="radio" name="recall_amt" value="1"><span>20 percentage points</span></label>
-        <label class="opt" onclick="selectOpt(this,'recall_amt')"><input type="radio" name="recall_amt" value="2"><span>40 percentage points</span></label>
-        <label class="opt" onclick="selectOpt(this,'recall_amt')"><input type="radio" name="recall_amt" value="3"><span>60 percentage points</span></label>
-        <label class="opt" onclick="selectOpt(this,'recall_amt')"><input type="radio" name="recall_amt" value="4"><span>10 percentage points</span></label>
-      </div>
-    </div>
+    <div class="card-header"><span class="block-badge">Check</span><h2 class="card-title">Attention Check Questions</h2></div>
+    <div class="info-box">Before proceeding, please answer the following questions.</div>
+    ${body}
     <div id="recall-reprompt" style="display:none;margin-top:12px"></div>
-    <div id="err-recall" class="error-box">Please answer both questions.</div>
+    <div id="err-recall" class="error-box">Please answer all questions.</div>
     ${navRow("submitRecall()")}
   </div>`;
 }
@@ -743,6 +766,7 @@ function renderHL(){
   progress(52);
   state.hlSwitched=false;
   state.hlPayRow=null;
+  state.hlManual={};
   const probs=["10%/90%","20%/80%","30%/70%","40%/60%","50%/50%","60%/40%","70%/30%","80%/20%","90%/10%","100%/0%"];
   const aOpts=Array(9).fill("₹200 or ₹160").concat(["₹200 (certain)"]);
   const bOpts=Array(9).fill("₹350 or ₹10").concat(["₹350 (certain)"]);
@@ -753,8 +777,15 @@ function renderHL(){
   </tr>`).join("");
   return `<div class="card">
     <div class="card-header"><span class="block-badge">${state.lotteryOrder==="HL_first"?"Lottery 1":"Lottery 2"}</span><h2 class="card-title">Choice Task</h2></div>
-    ${HONESTY}
-    <div class="info-box">For each row, choose Option A (safer) or Option B (riskier). The probability of the high payoff increases row by row. <strong>One row selected at random for real payment.</strong> Once you choose the riskier option, you cannot switch back.</div>
+    <div class="info-box">
+      In each row, choose between Option A (safer) and Option B (riskier).<br>
+      • The Prob High/Low column shows the probability of receiving the high payoff or low payoff for that row.<br>
+      • The probability of receiving the high payoff increases as you move down the table.<br>
+      • Once you choose Option B, all subsequent rows will automatically be recorded as Option B.<br>
+      • One row will be randomly selected for payment.<br>
+      • The option you chose in the selected row will be played for real, and the outcome will affect your earnings.<br>
+      Please review each row carefully before making your choices.
+    </div>
     <div class="warn-box" style="font-size:13px"><strong>Option A:</strong> High = ₹200, Low = ₹160 &nbsp;|&nbsp; <strong>Option B:</strong> High = ₹350, Low = ₹10</div>
     <table class="task-table" style="margin-top:14px">
       <thead><tr><th style="width:50px">Row</th><th>Prob High/Low</th><th>Option A (Safer)</th><th>Option B (Riskier)</th></tr></thead>
@@ -762,34 +793,39 @@ function renderHL(){
     </table>
     <div id="err-hl" class="error-box">Please answer all 10 rows.</div>
     <div id="hl-pay-row-box" style="display:none;margin-top:12px;padding:12px 16px;background:var(--amber-lt);border:1.5px solid var(--amber);border-radius:8px;font-size:13.5px;text-align:center">
-      <span style="color:var(--dark)">🎲 <strong>Row <span id="hl-pay-row-num"></span></strong> has been randomly selected for payment from this task.</span>
+      <span style="color:var(--dark)">We will reveal your outcome from this lottery at the end of the survey.</span>
     </div>
     ${navRow("submitHL()")}
   </div>`;
 }
 
 function hlChange(row,choice){
-  // Find the earliest row that currently has B selected
+  if(!state.hlManual) state.hlManual={};
+  state.hlManual[row]=choice;
+  // Find the earliest row the participant manually chose B in
   let firstB=-1;
   for(let i=0;i<10;i++){
-    const v=getChecked(`hl_${i}`);
-    if(v==="B"){firstB=i;break;}
+    if(state.hlManual[i]==="B"){firstB=i;break;}
   }
-  // Enable/disable Option A for all rows based on firstB
+  // Auto-record B for all rows after the first B; unlock the rest
   for(let i=0;i<10;i++){
     const aEl=document.getElementById(`hl_${i}_A`);
     const bEl=document.getElementById(`hl_${i}_B`);
     if(!aEl) continue;
     if(firstB>=0 && i>firstB){
-      // Row is after first B — disable A, keep B enabled
+      // Row is after first B — automatically recorded as Option B
+      if(bEl){bEl.checked=true;bEl.disabled=false;bEl.closest("label").style.opacity="1";}
+      aEl.checked=false;
       aEl.disabled=true;
       aEl.closest("label").style.opacity="0.4";
-      if(bEl){bEl.disabled=false;bEl.closest("label").style.opacity="1";}
     } else {
-      // Row is before or at firstB — fully unlocked
+      // Row is before or at firstB — fully unlocked; restore manual choice if any
       aEl.disabled=false;
       aEl.closest("label").style.opacity="1";
       if(bEl){bEl.disabled=false;bEl.closest("label").style.opacity="1";}
+      const m=state.hlManual[i];
+      aEl.checked=m==="A";
+      if(bEl) bEl.checked=m==="B";
     }
   }
   state.hlSwitched = firstB>=0;
@@ -800,10 +836,9 @@ function checkHLComplete(){
   let allDone=true;
   for(let i=0;i<10;i++){if(!getChecked(`hl_${i}`)){allDone=false;break;}}
   if(allDone){
-    if(!state.hlPayRow) state.hlPayRow=Math.floor(Math.random()*10)+1;
+    if(!state.hlPayRow) state.hlPayRow=Math.floor(Math.random()*10)+1; // drawn silently; revealed at end of survey
     const box=document.getElementById("hl-pay-row-box");
-    const num=document.getElementById("hl-pay-row-num");
-    if(box&&num){num.textContent=state.hlPayRow;box.style.display="block";}
+    if(box) box.style.display="block";
   }
 }
 
@@ -811,6 +846,7 @@ function renderLA(){
   progress(52);
   state.laSwitched=false;
   state.laPayRow=null;
+  state.laManual={};
   const losses=[60,90,120,150,175,200];
   const rows=losses.map((loss,i)=>`<tr>
     <td class="row-lbl">${i+1}</td>
@@ -820,42 +856,52 @@ function renderLA(){
   </tr>`).join("");
   return `<div class="card">
     <div class="card-header"><span class="block-badge">${state.lotteryOrder==="LA_first"?"Lottery 1":"Lottery 2"}</span><h2 class="card-title">Gamble Task</h2></div>
-    ${HONESTY}
-    <div class="info-box">Each row is a 50/50 gamble. Accept = coin flip: heads you win ₹200, tails you lose the stated amount. Decide for each row independently. <strong>One row selected at random for payment.</strong> Once you reject, you cannot accept again.</div>
+    <div class="info-box">
+      In each row, you may Accept or Reject a lottery that offers a 50% chance of winning ₹200 and a 50% chance of losing the amount shown in that row.<br>
+      • Accept: a random coin flip determines whether you win or lose.<br>
+      • Reject: no gain and no loss.<br>
+      • Once you reject a lottery, all subsequent lotteries will automatically be rejected.<br>
+      After all decisions are made, one row will be randomly selected for payment. If you accepted the lottery in that row, a coin flip will determine your gain or loss. If you rejected it, your earnings will remain unchanged. Any gain or loss from this task will be added to your final earnings and paid accordingly.
+    </div>
     <table class="task-table" style="margin-top:14px">
       <thead><tr><th style="width:50px">Row</th><th>Gamble</th><th>Accept</th><th>Reject</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div id="err-la" class="error-box">Please answer all 6 rows.</div>
     <div id="la-pay-row-box" style="display:none;margin-top:12px;padding:12px 16px;background:var(--amber-lt);border:1.5px solid var(--amber);border-radius:8px;font-size:13.5px;text-align:center">
-      <span style="color:var(--dark)">🎲 <strong>Row <span id="la-pay-row-num"></span></strong> has been randomly selected for payment from this task.</span>
+      <span style="color:var(--dark)">We will reveal your outcome from this lottery at the end of the survey.</span>
     </div>
     ${navRow("submitLA()")}
   </div>`;
 }
 
 function laChange(row,choice){
-  // Find the earliest row that currently has reject selected
+  if(!state.laManual) state.laManual={};
+  state.laManual[row]=choice;
+  // Find the earliest row the participant manually rejected
   let firstR=-1;
   for(let i=0;i<6;i++){
-    const v=getChecked(`la_${i}`);
-    if(v==="reject"){firstR=i;break;}
+    if(state.laManual[i]==="reject"){firstR=i;break;}
   }
-  // Enable/disable Accept for all rows based on firstR
+  // Auto-record Reject for all rows after the first rejection; unlock the rest
   for(let i=0;i<6;i++){
     const aEl=document.getElementById(`la_${i}_accept`);
     const rEl=document.getElementById(`la_${i}_reject`);
     if(!aEl) continue;
     if(firstR>=0 && i>firstR){
-      // Row is after first reject — disable accept
+      // Row is after first reject — automatically recorded as Reject
+      if(rEl){rEl.checked=true;rEl.disabled=false;rEl.closest("label").style.opacity="1";}
+      aEl.checked=false;
       aEl.disabled=true;
       aEl.closest("label").style.opacity="0.4";
-      if(rEl){rEl.disabled=false;rEl.closest("label").style.opacity="1";}
     } else {
-      // Row is before or at firstR — fully unlocked
+      // Row is before or at firstR — fully unlocked; restore manual choice if any
       aEl.disabled=false;
       aEl.closest("label").style.opacity="1";
       if(rEl){rEl.disabled=false;rEl.closest("label").style.opacity="1";}
+      const m=state.laManual[i];
+      aEl.checked=m==="accept";
+      if(rEl) rEl.checked=m==="reject";
     }
   }
   state.laSwitched = firstR>=0;
@@ -866,10 +912,9 @@ function checkLAComplete(){
   let allDone=true;
   for(let i=0;i<6;i++){if(!getChecked(`la_${i}`)){allDone=false;break;}}
   if(allDone){
-    if(!state.laPayRow) state.laPayRow=Math.floor(Math.random()*6)+1;
+    if(!state.laPayRow) state.laPayRow=Math.floor(Math.random()*6)+1; // drawn silently; revealed at end of survey
     const box=document.getElementById("la-pay-row-box");
-    const num=document.getElementById("la-pay-row-num");
-    if(box&&num){num.textContent=state.laPayRow;box.style.display="block";}
+    if(box) box.style.display="block";
   }
 }
 
@@ -878,18 +923,27 @@ function renderRound(num){
   const progs={1:60,2:67,3:74};
   progress(progs[num]);
   const nexts={1:"block7",2:"block8",3:"block8s"};
+  const assetRows=Object.entries(ASSETS).map(([k,a])=>`
+    <tr><td><strong>${a.label}</strong></td><td>${a.desc}</td>
+    <td style="text-align:center">${a.ret}</td>
+    <td style="text-align:center">${a.sd===0?"None":"±"+a.sd+"%"}</td>
+    <td style="text-align:center">${a.range}</td></tr>`).join("");
   const assetBoxes=Object.entries(ASSETS).map(([k,a])=>`
     <div class="alloc-item">
       <div class="alloc-asset-name">${a.label}</div>
-      <div class="alloc-asset-sub">${a.ret} · ${a.range}</div>
       <input type="number" id="R${num}_${k}" min="0" max="${ENDOWMENT}" step="500" placeholder="0"
         oninput="this.value=Math.max(0,parseInt(this.value)||0);updateAllocTotal('R${num}')">
     </div>`).join("");
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Round ${num} of 3</span><h2 class="card-title">Investment Decision</h2></div>
-    ${HONESTY}
     <div class="info-box">Allocate your <strong>50,000 units</strong> across the five assets. Must sum to exactly 50,000. No results shown between rounds.</div>
-    ${state.condition!=="Control"?`<div class="warn-box" style="font-size:13px">Reminder: your peer earned a return 40 percentage points above the cash benchmark.</div>`:""}
+    ${state.condition!=="Control"?`<div class="warn-box" style="font-size:13px">Reminder: your paired participant earned <strong>70,000 EU</strong> in the experiment.</div>`:""}
+    <div class="sec-label">Asset Menu</div>
+    <table class="inst-table">
+      <thead><tr><th>Asset</th><th>Description</th><th>Expected Return</th><th>Risk Range</th><th>Return Range</th></tr></thead>
+      <tbody>${assetRows}</tbody>
+    </table>
+    <div class="sec-label">Your Allocation</div>
     <div class="alloc-grid">${assetBoxes}</div>
     <div class="alloc-total" id="total_R${num}">Total: <span class="alloc-total-val alloc-err">0 / 50,000 EU</span></div>
     <div id="err-round${num}" class="error-box">Allocations must sum to exactly 50,000.</div>
@@ -901,15 +955,12 @@ function renderRound(num){
 function renderSelfAssess(){
   progress(80);
   return `<div class="card">
-    <div class="card-header"><span class="block-badge">Self-Assessment</span><h2 class="card-title">Your Investment Experience</h2></div>
-    ${HONESTY}
-    <div class="info-box">Before we show you your results, we'd like to know how you feel about your decisions.</div>
+    <div class="card-header"><span class="block-badge">Self-Assessment</span><h2 class="card-title">Your Approach</h2></div>
     <div class="q-block">
-      <div class="q-label"><span class="q-num">Q</span>Based on your investment decisions across the three rounds, how would you primarily attribute your performance?</div>
+      <div class="q-label">Before we show you your earnings, we'd like to understand how you approached the investment decisions. Which of the following best describes your overall approach during the three investment rounds?</div>
       <div class="options">
-        <label class="opt" onclick="selectOpt(this,'self_attr')"><input type="radio" name="self_attr" value="1"><span>Mostly luck — the returns were largely determined by random market draws</span></label>
-        <label class="opt" onclick="selectOpt(this,'self_attr')"><input type="radio" name="self_attr" value="2"><span>Mostly skill — I made deliberate choices that I believe drove my performance</span></label>
-        <label class="opt" onclick="selectOpt(this,'self_attr')"><input type="radio" name="self_attr" value="3"><span>An equal mix of luck and skill</span></label>
+        <label class="opt" onclick="selectOpt(this,'self_attr')"><input type="radio" name="self_attr" value="1"><span><strong>Option 1</strong> — I mostly made my investment decisions without a particular strategy and relied largely on intuition or chance.</span></label>
+        <label class="opt" onclick="selectOpt(this,'self_attr')"><input type="radio" name="self_attr" value="2"><span><strong>Option 2</strong> — I followed a deliberate strategy and tried to maximize my earnings based on the information available.</span></label>
       </div>
     </div>
     <div id="err-self" class="error-box">Please make a selection.</div>
@@ -917,22 +968,38 @@ function renderSelfAssess(){
   </div>`;
 }
 
-// ── BLOCK 9 — BELIEF ELICITATION (yes/no, end) ───────────────────────────
+// ── BLOCK 9 — BONUS QUESTION (₹50) ────────────────────────────────────────
 function renderBlock9(){
   progress(84);
   return `<div class="card">
-    <div class="card-header"><span class="block-badge">Block 9</span><h2 class="card-title">Investment Outcome Question</h2></div>
-    ${HONESTY}
-    <div class="info-box">This question carries a bonus of <strong>₹50</strong> if you answer correctly.</div>
+    <div class="card-header"><span class="block-badge">Block 9</span><h2 class="card-title">Bonus Question (₹50)</h2></div>
+    <div class="info-box">This question carries a bonus of <strong>₹50</strong> if your answer is correct.</div>
     <div class="q-block">
-      <div class="q-label"><span class="q-num">Q</span>Do you think your average porthink you will make at least <strong>20,000 EU returns</strong> on your <strong>50,000 EU</strong> investment?</div>
+      <div class="q-label">One of the three investment rounds will be selected at random for payment. Based on the decisions you made, do you think your return in the selected round will be at least <strong>20,000 EU</strong>?</div>
       <div class="options">
-        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="yes"><span>Yes — I think I will make at least 20,000 EU in returns</span></label>
-        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="no"><span>No — I do not think I will make 20,000 EU in returns</span></label>
+        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="yes"><span>Yes, I think my return will be at least 20,000 EU.</span></label>
+        <label class="opt" onclick="selectOpt(this,'belief_yn')"><input type="radio" name="belief_yn" value="no"><span>No, I do not think my return will be at least 20,000 EU.</span></label>
       </div>
     </div>
     <div id="err-b9" class="error-box">Please select an answer.</div>
     ${navRow("submitBlock9()")}
+  </div>`;
+}
+
+// ── BLOCK 9b — RELATIVE RANK (unincentivized) ─────────────────────────────
+function renderBlock9b(){
+  progress(87);
+  const opts=["Top 10%","11–25%","26–50%","Bottom 50%"];
+  return `<div class="card">
+    <div class="card-header"><span class="block-badge">Block 9</span><h2 class="card-title">One More Question</h2></div>
+    <div class="q-block">
+      <div class="q-label">Compared with other participants in this study, where do you think your earnings rank?</div>
+      <div class="options">
+        ${opts.map((o,i)=>`<label class="opt" onclick="selectOpt(this,'rank_belief')"><input type="radio" name="rank_belief" value="${i+1}"><span>${o}</span></label>`).join("")}
+      </div>
+    </div>
+    <div id="err-b9b" class="error-box">Please select an answer.</div>
+    ${navRow("submitBlock9b()")}
   </div>`;
 }
 
@@ -966,7 +1033,7 @@ function renderBlock10(){
       const txt=typeof item==="object"?item.text:item;
       const isRev=typeof item==="object"?item.rev:revItems.includes(i+1);
       const cells=scale5.map((_,si)=>`<td><input type="radio" name="${prefix}_${i}" value="${si+1}"></td>`).join("");
-      return `<tr><td class="stmt">${i+1}. I see myself as someone who ${txt}${isRev?" <em style='font-size:11px;color:var(--red)'>(R)</em>":""}</td>${cells}</tr>`;
+      return `<tr><td class="stmt">${i+1}. I see myself as someone who ${txt}</td>${cells}</tr>`;
     }).join("");
   };
   const makeSCOMat=(items,prefix)=>{
@@ -977,7 +1044,6 @@ function renderBlock10(){
   };
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Block 10</span><h2 class="card-title">About Your Personality</h2></div>
-    ${HONESTY}
     <div class="sec-label">Big Five Personality (BFI-10)</div>
     <p style="font-size:13px;color:var(--slate);margin-bottom:10px">How well do the following describe your personality?</p>
     <div class="matrix-wrap">
@@ -993,13 +1059,6 @@ function renderBlock10(){
         <thead><tr><th class="stmt-col">Statement</th>${scaleHead}</tr></thead>
         <tbody>${makeSCOMat(scoItems,"sco")}</tbody>
       </table>
-    </div>
-    <div class="sec-label" style="margin-top:24px">Manipulation Check</div>
-    <div class="q-block">
-      <div class="q-label"><span class="q-num">MC</span>How motivated were you to match or exceed the peer's return during the investment rounds?</div>
-      <div class="options">
-        ${["Not at all motivated","Slightly motivated","Somewhat motivated","Moderately motivated","Quite motivated","Very motivated","Extremely motivated"].map((l,i)=>`<label class="opt" onclick="selectOpt(this,'mc1')"><input type="radio" name="mc1" value="${i+1}"><span>${l}</span></label>`).join("")}
-      </div>
     </div>
     <div id="err-b10" class="error-box">Please answer all questions.</div>
     ${navRow("submitBlock10()")}
@@ -1018,6 +1077,12 @@ function renderBlock11(){
   state.returns=rounds;
   const payEU=Math.round(ENDOWMENT*(1+parseFloat(rounds[state.payRound-1].portfolio.toFixed(1))/100));
   const payINR=payEU/100;
+  // Bonus question: correct if their yes/no prediction matches whether the
+  // return in the randomly selected round is at least 20,000 EU
+  const returnEU=payEU-ENDOWMENT;
+  const belief=state.answers.belief_yn;
+  state.bonusCorrect=belief?((belief==="yes")===(returnEU>=20000)):false;
+  state.bonus=state.bonusCorrect?50:0;
   const hl=state.hlResult;
   const la=state.laResult;
   const l1IsHL=state.lotteryOrder==="HL_first";
@@ -1062,7 +1127,7 @@ function renderBlock11(){
     </div>`;
   }).join("");
 
-  saveBlock("B11_Returns",{pay_round:state.payRound,r1:rounds[0].portfolio,r2:rounds[1].portfolio,r3:rounds[2].portfolio,pay_eu:payEU,pay_inr:payINR,hl_payout:hl?.payout||0,la_payout:la?.payout||0});
+  saveBlock("B11_Returns",{pay_round:state.payRound,r1:rounds[0].portfolio,r2:rounds[1].portfolio,r3:rounds[2].portfolio,pay_eu:payEU,pay_inr:payINR,hl_payout:hl?.payout||0,la_payout:la?.payout||0,belief_yn:belief||null,belief_correct:state.bonusCorrect,bonus_inr:state.bonus});
 
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Your Results</span><h2 class="card-title">All Task Outcomes</h2></div>
@@ -1090,9 +1155,11 @@ function revealAndFinish(){
   const l2Pay=(l1IsHL?la:hl)?.payout||0;
   const payEU=Math.round(ENDOWMENT*(1+parseFloat(state.returns[state.payRound-1].portfolio.toFixed(1))/100));
   const payINR=payEU/100;
-  const total=Math.max(100,100+payINR+l1Pay+l2Pay);
+  const bonus=state.bonus||0;
+  const total=Math.max(100,100+payINR+l1Pay+l2Pay+bonus);
   const l1Col=l1Pay>=0?"color:var(--amber)":"color:var(--red)";
   const l2Col=l2Pay>=0?"color:var(--amber)":"color:var(--red)";
+  const bCol=bonus>0?"color:var(--amber)":"color:rgba(255,255,255,0.6)";
   document.getElementById("final-section").innerHTML=`
     <div style="padding:22px;background:var(--navy);border-radius:10px">
       <h3 style="font-family:var(--font-h);color:var(--white);font-size:18px;margin-bottom:6px;text-align:center">Thank You!</h3>
@@ -1102,6 +1169,7 @@ function revealAndFinish(){
         <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:8px 4px;color:rgba(255,255,255,0.6)">Investment Round ${state.payRound} (${payEU.toLocaleString("en-IN")} units ÷ 100)</td><td style="padding:8px 4px;text-align:right;color:var(--amber);font-weight:600">${fmtINR(payINR)}</td></tr>
         <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:8px 4px;color:rgba(255,255,255,0.6)">Lottery 1 payout (Row ${(l1IsHL?hl:la)?.row||"—"})</td><td style="padding:8px 4px;text-align:right;font-weight:600;${l1Col}">${l1Pay>=0?fmtINR(l1Pay):"-"+fmtINR(-l1Pay)}</td></tr>
         <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:8px 4px;color:rgba(255,255,255,0.6)">Lottery 2 payout (Row ${(l1IsHL?la:hl)?.row||"—"})</td><td style="padding:8px 4px;text-align:right;font-weight:600;${l2Col}">${l2Pay>=0?fmtINR(l2Pay):"-"+fmtINR(-l2Pay)}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.12)"><td style="padding:8px 4px;color:rgba(255,255,255,0.6)">Bonus question (${state.bonusCorrect?"answered correctly":"answered incorrectly"})</td><td style="padding:8px 4px;text-align:right;font-weight:600;${bCol}">${fmtINR(bonus)}</td></tr>
         <tr style="background:rgba(255,255,255,0.06)"><td style="padding:10px 4px;color:var(--white);font-weight:700;font-size:14px">Total payment</td><td style="padding:10px 4px;text-align:right;color:var(--amber);font-weight:700;font-size:16px">${fmtINR(total)}</td></tr>
       </table>
       <p style="color:rgba(255,255,255,0.5);font-size:12px;text-align:center;margin-top:14px">All payments processed within one week.<br>Questions: <strong style="color:var(--amber)">puneet.arora@mdi.ac.in</strong></p>
@@ -1180,27 +1248,48 @@ function submitBlock4(){
     state.answers.ref_goals=Array.from(checked).map(c=>c.value);
   }
   saveBlock("B4_Treatment",{condition:state.condition,conditionNum:state.conditionNum,ref_goals:state.answers.ref_goals||null});
-  if(state.condition==="Control") goSection("lottery_a");
-  else goSection("block4r");
+  goSection("block4r");
 }
 
 function submitRecall(){
-  const how=getChecked("recall_how");
-  const amt=getChecked("recall_amt");
-  if(!how||!amt){document.getElementById("err-recall").style.display="block";return;}
-  const howCorrect=(state.condition==="Skill")?(how==="1"):(how==="1");
-  const amtCorrect=amt==="2";
-  if(!howCorrect||!amtCorrect){
-    // Show peer info again
-    const rp=document.getElementById("recall-reprompt");
-    const info=state.condition==="Skill"
-      ?"Participant P-42 earned 40 percentage points above cash through deliberate analysis and careful asset selection."
-      :"Participant P-42 earned 40 percentage points above cash through a randomly assigned allocation that coincided with favourable market draws.";
-    rp.innerHTML=`<div class="warn-box"><strong>Not quite.</strong> ${info} Please review and proceed.</div>`;
-    rp.style.display="block";
+  const fillers=FILLERS[state.condition]||FILLERS.Control;
+  const d={};
+  let ok=true;
+  fillers.forEach(f=>{const v=getChecked(f.id);if(!v)ok=false;d[f.id]=v;d[f.id+"_correct"]=v===f.correct;});
+  if(state.condition!=="Control"){
+    const amt=getChecked("ac_amt");
+    const attr=getChecked("ac_attr");
+    if(!amt||!attr)ok=false;
+    if(ok){
+      const isLuck=state.condition==="Luck"||state.condition==="LuckReflect";
+      const amtCorrect=amt==="70,000 EU";
+      const attrCorrect=attr===(isLuck?"luck":"skill");
+      d.ac_amt=amt;d.ac_attr=attr;d.amt_correct=amtCorrect;d.attr_correct=attrCorrect;
+      if((!amtCorrect||!attrCorrect)&&!state.recallReprompted){
+        state.recallReprompted=true;
+        const info=isLuck
+          ?`Your paired participant's earnings in the experiment were <strong>70,000 EU</strong>. They responded: <em>"I believe my earnings were mainly due to luck. My investment choices happened to be matched with favorable returns."</em>`
+          :`Your paired participant's earnings in the experiment were <strong>70,000 EU</strong>. They responded: <em>"I believe my earnings were mainly due to my investment decisions. I used an investment strategy that I thought would perform well."</em>`;
+        const rp=document.getElementById("recall-reprompt");
+        rp.innerHTML=`<div class="warn-box"><strong>Not quite.</strong> ${info} Please review your answers and continue.</div>`;
+        rp.style.display="block";
+        return;
+      }
+      d.reprompted=!!state.recallReprompted;
+    }
   }
-  saveBlock("B4_Recall",{recall_how:how,recall_amt:amt,how_correct:howCorrect,amt_correct:amtCorrect});
-  goSection("lottery_a");
+  if(!ok){document.getElementById("err-recall").style.display="block";return;}
+  saveBlock("B4_AttentionCheck",d);
+  goSection("prelottery");
+}
+
+// ── PRE-LOTTERY TRANSITION PAGE ───────────────────────────────────────────
+function renderPreLottery(){
+  progress(48);
+  return `<div class="card">
+    <p style="font-size:14.5px;line-height:1.8;padding:10px 0">Before the investment task, you will complete two short decision-making exercises. Your choices may affect your final earnings. Instructions for each exercise will be provided immediately before it begins.</p>
+    ${navRow("goSection('lottery_a')","Next →")}
+  </div>`;
 }
 
 function submitHL(){
@@ -1266,7 +1355,16 @@ function submitSelfAssess(){
 function submitBlock9(){
   const v=getChecked("belief_yn");
   if(!v){document.getElementById("err-b9").style.display="block";return;}
+  state.answers.belief_yn=v;
   saveBlock("B9_Belief",{belief_yn:v});
+  goSection("block9b");
+}
+
+function submitBlock9b(){
+  const v=getChecked("rank_belief");
+  if(!v){document.getElementById("err-b9b").style.display="block";return;}
+  state.answers.rank_belief=v;
+  saveBlock("B9b_RankBelief",{rank_belief:v});
   goSection("block10");
 }
 
@@ -1274,9 +1372,8 @@ function submitBlock10(){
   let ok=true;
   for(let i=0;i<10;i++){if(!getChecked(`bfi_${i}`)){ok=false;break;}}
   for(let i=0;i<11;i++){if(!getChecked(`sco_${i}`)){ok=false;break;}}
-  if(!getChecked("mc1")) ok=false;
   if(!ok){document.getElementById("err-b10").style.display="block";return;}
-  const d={bfi:[...Array(10)].map((_,i)=>getChecked(`bfi_${i}`)).join(","),sco:[...Array(11)].map((_,i)=>getChecked(`sco_${i}`)).join(","),mc1:getChecked("mc1")};
+  const d={bfi:[...Array(10)].map((_,i)=>getChecked(`bfi_${i}`)).join(","),sco:[...Array(11)].map((_,i)=>getChecked(`sco_${i}`)).join(",")};
   saveBlock("B10_Personality",d);
   goSection("block11");
 }
