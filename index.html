@@ -122,19 +122,47 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 // CONFIG
 // ═══════════════════════════════════════════════════════════════════════════
 const CONFIG = {
-  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxl3qIIHiII3xylh2R4MPaV3qwQReRPyNixT-cVuqNf2ZhmEgv2ka2v8SiO1MSff126/exec",
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyJ0XR9PugekXHx1ajaAcRY_VRLTE5r4kTB09MXbQQopFGTUcT2FBOyEdgT87HBULzd/exec",
   MAX_PARTICIPANTS: 80,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ASSET PARAMETERS
 // ═══════════════════════════════════════════════════════════════════════════
+// Base ASSETS used in Block 3 instructions (Round 1 parameters)
 const ASSETS = {
-  cash:{ label:"Cash",    mean:0,  sd:0,  ret:"0%",   range:"Always 0%",           desc:"Guaranteed 0% return" },
-  L:   { label:"Asset L", mean:4,  sd:6,  ret:"+4%",  range:"-2% to +10%",         desc:"Govt. bonds / debt funds" },
-  M:   { label:"Asset M", mean:8,  sd:15, ret:"+8%",  range:"-7% to +23%",         desc:"Large-cap equity index" },
-  H:   { label:"Asset H", mean:13, sd:25, ret:"+13%", range:"-12% to +38%",        desc:"Small-cap equity" },
-  V:   { label:"Asset V", mean:20, sd:40, ret:"+20%", range:"-20% to +60%",        desc:"Derivatives / speculative" },
+  cash:{ label:"Cash",    mean:0,  sd:0,  ret:"0%",   range:"Always 0%",  desc:"Guaranteed 0% return" },
+  L:   { label:"Asset L", mean:4,  sd:6,  ret:"+4%",  range:"-2% to +10%",  desc:"Govt. bonds / debt funds" },
+  M:   { label:"Asset M", mean:8,  sd:15, ret:"+8%",  range:"-7% to +23%",  desc:"Large-cap equity index" },
+  H:   { label:"Asset H", mean:13, sd:25, ret:"+13%", range:"-12% to +38%", desc:"Small-cap equity" },
+  V:   { label:"Asset V", mean:20, sd:40, ret:"+20%", range:"-20% to +60%", desc:"Derivatives / speculative" },
+};
+
+// Round 1 — Base parameters
+const ASSETS_R1 = {
+  cash:{ label:"Cash",    mean:0,  sd:0,  ret:"0%",   range:"Always 0%",    desc:"Guaranteed 0% return" },
+  L:   { label:"Asset L", mean:4,  sd:6,  ret:"+4%",  range:"-2% to +10%",  desc:"Govt. bonds / debt funds" },
+  M:   { label:"Asset M", mean:8,  sd:15, ret:"+8%",  range:"-7% to +23%",  desc:"Large-cap equity index" },
+  H:   { label:"Asset H", mean:13, sd:25, ret:"+13%", range:"-12% to +38%", desc:"Small-cap equity" },
+  V:   { label:"Asset V", mean:20, sd:40, ret:"+20%", range:"-20% to +60%", desc:"Derivatives / speculative" },
+};
+
+// Round 2 — Shifted upward slightly
+const ASSETS_R2 = {
+  cash:{ label:"Cash",    mean:0,  sd:0,  ret:"0%",   range:"Always 0%",    desc:"Guaranteed 0% return" },
+  L:   { label:"Asset L", mean:5,  sd:7,  ret:"+5%",  range:"-2% to +12%",  desc:"Govt. bonds / debt funds" },
+  M:   { label:"Asset M", mean:10, sd:14, ret:"+10%", range:"-4% to +24%",  desc:"Large-cap equity index" },
+  H:   { label:"Asset H", mean:15, sd:23, ret:"+15%", range:"-8% to +38%",  desc:"Small-cap equity" },
+  V:   { label:"Asset V", mean:22, sd:38, ret:"+22%", range:"-16% to +60%", desc:"Derivatives / speculative" },
+};
+
+// Round 3 — Shifted downward slightly
+const ASSETS_R3 = {
+  cash:{ label:"Cash",    mean:0,  sd:0,  ret:"0%",   range:"Always 0%",    desc:"Guaranteed 0% return" },
+  L:   { label:"Asset L", mean:3,  sd:5,  ret:"+3%",  range:"-2% to +8%",   desc:"Govt. bonds / debt funds" },
+  M:   { label:"Asset M", mean:7,  sd:13, ret:"+7%",  range:"-6% to +20%",  desc:"Large-cap equity index" },
+  H:   { label:"Asset H", mean:12, sd:22, ret:"+12%", range:"-10% to +34%", desc:"Small-cap equity" },
+  V:   { label:"Asset V", mean:18, sd:35, ret:"+18%", range:"-17% to +53%", desc:"Derivatives / speculative" },
 };
 const ENDOWMENT   = 50000;
 const PEER_EARNINGS_EU = 70000; // peer earned 70,000 EU (40% up from the 50,000 EU endowment)
@@ -683,7 +711,12 @@ function renderBlock3(){
     <tr><td><strong>${a.label}</strong></td><td>${a.desc}</td>
     <td style="text-align:center">${a.ret}</td>
     <td style="text-align:center">${a.sd===0?"None":"±"+a.sd+"%"}</td>
-    <td style="text-align:center">${a.range}</td></tr>`).join("");
+    <td style="text-align:center">${a.range}</td>
+    <td style="text-align:center;padding:6px 8px">
+      <input type="number" id="exp_${k}" min="0" max="50000" step="500" placeholder="0"
+        style="width:90px;padding:6px 8px;font-size:13px;border:1.5px solid var(--light);border-radius:6px;text-align:right"
+        oninput="updateExpTotal()">
+    </td></tr>`).join("");
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Block 3</span><h2 class="card-title">How the Investment Task Works</h2></div>
     <div class="sec-label">Instructions</div>
@@ -699,7 +732,7 @@ function renderBlock3(){
     </div>
     <div class="sec-label">Asset Menu</div>
     <table class="inst-table">
-      <thead><tr><th>Asset</th><th>Description</th><th>Expected Return</th><th>Risk Range</th><th>Return Range</th></tr></thead>
+      <thead><tr><th>Asset</th><th>Description</th><th>Expected Return</th><th>Risk Range</th><th>Return Range</th><th>Amount to Allocate (EU)</th></tr></thead>
       <tbody>${assetRows}</tbody>
     </table>
     <div class="sec-label">Example</div>
@@ -712,14 +745,6 @@ function renderBlock3(){
     <div class="sec-label">Try It Yourself — Return Explorer</div>
     <p style="font-size:13px;color:var(--slate);margin-bottom:10px">For each simulation, a random number within the return range is independently drawn for each of the five asset classes.</p>
     <p style="font-size:13.5px;color:var(--slate);margin-bottom:12px">Enter any allocation and simulate a return. Try as many times as you like. <strong>This is not recorded and does not count toward payment.</strong></p>
-    <div class="alloc-grid" id="exp-grid">
-      ${Object.entries(ASSETS).map(([k,a])=>`
-        <div class="alloc-item">
-          <div class="alloc-asset-name">${a.label}</div>
-          <input type="number" id="exp_${k}" min="0" max="50000" step="500" placeholder="0"
-            oninput="updateExpTotal()">
-        </div>`).join("")}
-    </div>
     <div class="alloc-total" id="exp-total">Total: <span class="alloc-total-val alloc-err">0 / 50,000</span></div>
     <div id="exp-error" class="error-box" style="margin-top:6px">Allocations must sum to exactly 50,000 to simulate.</div>
     <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
@@ -881,18 +906,22 @@ const FILLERS={
     {id:"ac_f1",q:"What is 5 + 7?",opts:["10","11","12","13"],correct:"12"},
     {id:"ac_f2",q:"What is 14 − 6?",opts:["6","7","8","9"],correct:"8"},
     {id:"ac_f3",q:"What is 3 × 4?",opts:["7","12","14","16"],correct:"12"},
+    {id:"ac_f4",q:"Which of the following is a season?",opts:["Monday","Winter","April","Morning"],correct:"Winter"},
   ],
   Luck:[
     {id:"ac_f1",q:"What is 5 + 7?",opts:["10","11","12","13"],correct:"12"},
     {id:"ac_f2",q:"What is 17 − 9?",opts:["6","7","8","9"],correct:"8"},
+    {id:"ac_f3",q:"Which of the following is a fruit?",opts:["Carrot","Broccoli","Mango","Spinach"],correct:"Mango"},
   ],
   Skill:[
     {id:"ac_f1",q:"What is 9 + 6?",opts:["13","14","15","16"],correct:"15"},
     {id:"ac_f2",q:"What is 4 × 5?",opts:["16","18","20","24"],correct:"20"},
+    {id:"ac_f3",q:"Which of the following is a planet?",opts:["Sun","Moon","Mars","Comet"],correct:"Mars"},
   ],
   LuckReflect:[
     {id:"ac_f1",q:"What is 8 + 4?",opts:["10","11","12","13"],correct:"12"},
     {id:"ac_f2",q:"What is 18 − 9?",opts:["7","8","9","10"],correct:"9"},
+    {id:"ac_f3",q:"Which of the following is a colour?",opts:["Circle","Square","Triangle","Blue"],correct:"Blue"},
   ],
 };
 
@@ -1129,9 +1158,7 @@ function renderPreInvestment(){
 }
 
 // ── INVESTMENT ROUNDS ─────────────────────────────────────────────────────
-const ASSETS_R1 = ASSETS;
-const ASSETS_R2 = ASSETS;
-const ASSETS_R3 = ASSETS;
+
 
 function renderRound(num){
   const progs={1:60,2:67,3:74};
@@ -1152,8 +1179,18 @@ function renderRound(num){
       </td>
     </tr>`).join("");
   const nextLabel = num<3 ? "Go to next round →" : "Continue →";
+  const isLuckR=state.condition==="Luck"||state.condition==="LuckReflect";
+  const roundReminderHtml=state.condition!=="Control"?`
+    <div class="warn-box" style="margin-bottom:14px;font-size:13.5px">
+      <strong>Reminder:</strong> You were paired with participant <strong>P-42</strong>, who completed a similar investment task in an earlier session and earned a total of <strong>70,000 EU</strong>. When asked what contributed most to their earnings, they responded:<br><br>
+      <em>&ldquo;${isLuckR
+        ?'I believe my earnings were mainly due to luck. My investment choices happened to be matched with favorable returns.'
+        :'I believe my earnings were mainly due to my investment decisions. I used an investment strategy that I thought would perform well.'
+      }&rdquo;</em>
+    </div>`:"";
   return `<div class="card">
     <div class="card-header"><span class="block-badge">Round ${num} of 3</span><h2 class="card-title">Investment Decision</h2></div>
+    ${roundReminderHtml}
     <div class="info-box">Allocate your <strong>50,000 units</strong> across the five assets using the column on the right. Your allocations must sum to exactly 50,000 EU.</div>
     <div class="sec-label">Asset Menu & Allocation</div>
     <div style="overflow-x:auto">
@@ -1220,7 +1257,7 @@ function renderBlock9b(){
   </div>`;
 }
 
-// ── BLOCK 10 — BFI-10 + SCO ───────────────────────────────────────────────
+// ── BLOCK 10 — SOCIAL COMPARISON ORIENTATION ──────────────────────────────────
 function renderBlock10(){
   progress(90);
   const scale5=["Strongly disagree","Disagree","Neither agree nor disagree","Agree","Strongly agree"];
